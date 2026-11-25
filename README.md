@@ -12,7 +12,7 @@ Edit `config.toml` (directly on GitHub is fine):
 
 ## One-time setup: push notifications (simplest)
 1. Install the **ntfy** app (iPhone App Store / Google Play).
-2. In the app tap **+**, enter your topic name (e.g. `tennis-da4497a29adb`), subscribe.
+2. In the app tap **+**, enter your topic name (e.g. `tennis-` plus random letters, like a password), subscribe.
 3. GitHub repo → Settings → Secrets and variables → Actions → New repository secret:
    `NTFY_TOPIC` = the same topic name.
 4. Actions tab → "Check tennis slots" → **Run workflow** to test.
