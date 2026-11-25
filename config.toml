@@ -1,0 +1,25 @@
+# Tennis slot watcher settings — edit freely.
+
+[email]
+# Where alerts go. The sender account and password come from secrets, not this file.
+to = "you@example.com"
+# true  = email lists the NEW slots plus every free slot in the window
+# false = email lists only the new slots
+include_all_free = true
+
+[[clubs]]
+name = "Treptower Teufel"
+type = "ebusy"
+base_url = "https://treptower-teufel.ebusy.de"
+module = 1
+days_ahead = 5            # today + next 5 days (club rule: max 5 days in advance)
+open_from = "06:00"       # first bookable hour on the grid
+open_until = "01:00"      # last slot ends at 01:00 (after midnight)
+slot_minutes = 60
+
+# Optional filters — remove or leave empty to see everything.
+# courts: names as shown on the site, e.g. ["Platz 11", "Platz 12", "Platz 13"]
+courts = []
+# Time windows per day type, 24h "HH:MM-HH:MM" (slot must START inside a window).
+weekday_times = []        # e.g. ["17:00-22:00"]
+weekend_times = []        # e.g. ["08:00-20:00"]
