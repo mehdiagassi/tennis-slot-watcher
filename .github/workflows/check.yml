@@ -3,10 +3,12 @@ name: Check tennis slots
 on:
   schedule:
     - cron: "*/30 * * * *"   # every 30 minutes (GitHub may delay runs a few minutes)
-  workflow_dispatch: {}       # "Run workflow" button for a manual check
+  workflow_dispatch: {}       # "Check now" button in the app / Actions tab
+  push:
+    paths: ["config.json"]    # re-check right after settings change in the app
 
 permissions:
-  contents: write             # to save state.json (which slots were already reported)
+  contents: write             # to save state.json / slots.json
 
 concurrency:
   group: tennis-check
@@ -28,9 +30,13 @@ jobs:
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: python check_slots.py
-      - name: Save state
+      - name: Save results
+        if: always()
         run: |
           git config user.name "slot-watcher"
           git config user.email "slot-watcher@users.noreply.github.com"
-          git add state.json
-          git diff --cached --quiet || (git commit -m "Update slot state" && git push)
+          git add state.json slots.json 2>/dev/null || true
+          git diff --cached --quiet && exit 0
+          git commit -m "Update slots [skip ci]"
+          for i in 1 2 3; do git pull --rebase -q && git push -q && exit 0; sleep 5; done
+          exit 1

@@ -1,0 +1,23 @@
+{
+ "paused": false,
+ "clubs": [
+  {
+   "name": "Treptower Teufel",
+   "type": "ebusy",
+   "enabled": true,
+   "base_url": "https://treptower-teufel.ebusy.de",
+   "module": 1,
+   "days_ahead": 5,
+   "max_days_ahead": 5,
+   "open_from": "06:00",
+   "open_until": "01:00",
+   "slot_minutes": 60,
+   "courts": [],
+   "weekday_times": [],
+   "weekend_times": []
+  }
+ ],
+ "email": {
+  "include_all_free": true
+ }
+}

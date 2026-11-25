@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-"""Check tennis clubs for free slots and email when new ones appear."""
-import argparse, json, os, re, smtplib, ssl, sys, tomllib, urllib.parse, urllib.request
-from datetime import datetime, timedelta, date
+"""Check tennis clubs for free slots and notify (ntfy push and/or email) when new ones appear.
+
+Settings: config.json (edited by the phone app in docs/ or by hand).
+Outputs:  state.json (slots already reported) and slots.json (what the app shows).
+"""
+import argparse, json, os, re, smtplib, ssl, sys, urllib.parse, urllib.request
+from datetime import datetime, timedelta
 from email.message import EmailMessage
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -26,57 +30,62 @@ def hm(s):
 
 
 # ---------- eBuSy ----------
+def ebusy_booking_url(club, day=None):
+    url = f"{club['base_url'].rstrip('/')}/lite-module/{club.get('module', 1)}"
+    return url + (f"?selectedDate={day:%m/%d/%Y}" if day else "")
+
+
 def ebusy_courts(club):
-    html = http_get(f"{club['base_url']}/lite-module/{club['module']}")
+    """{court_id: {"name": "Platz 1", "info": "Traglufthalle (Sandplatz)"}}"""
+    html = http_get(ebusy_booking_url(club))
     courts = {}
-    for cid, title in re.findall(r'<th class="court[^"]*" data-id="(\d+)" title="([^"]+)"', html):
-        courts[int(cid)] = title
+    for cid, inner in re.findall(r'<th class="court[^"]*" data-id="(\d+)"[^>]*>(.*?)</th>', html, re.S):
+        parts = [p.strip() for p in re.split(r"<[^>]+>", inner) if p.strip()]
+        name = parts[0] if parts else f"Court {cid}"
+        info = " ".join(p for p in parts[1:] if not re.fullmatch(r"P\d+", p))
+        courts[int(cid)] = {"name": name, "info": info}
     if not courts:
-        raise RuntimeError("could not read court list from eBuSy page (layout changed?)")
+        raise RuntimeError("could not read the court list (did the booking page change?)")
     return courts
-
-
-def ebusy_reservations(club, day):
-    q = urllib.parse.urlencode({"timestamp": "", "selectedDate": day.strftime("%m/%d/%Y")})
-    data = http_get(f"{club['base_url']}/lite-module/{club['module']}?{q}", json_mode=True)
-    if "reservations" not in data:
-        raise RuntimeError("unexpected eBuSy response (no 'reservations')")
-    return data["reservations"]
 
 
 def ebusy_free_slots(club, now):
     courts = ebusy_courts(club)
     today = now.date()
-    days = [today + timedelta(days=i) for i in range(club.get("days_ahead", 5) + 1)]
-    busy = {}  # (date, court) -> list of (start, end) minutes
-    fetched = set()
+    days = [today + timedelta(days=i) for i in range(int(club.get("days_ahead", 5)) + 1)]
+    busy, fetched = {}, set()  # (date, court) -> [(start, end)] in minutes
     for d in days:
         if d in fetched:
             continue
-        for r in ebusy_reservations(club, d):
+        q = urllib.parse.urlencode({"timestamp": "", "selectedDate": d.strftime("%m/%d/%Y")})
+        data = http_get(f"{ebusy_booking_url(club)}?{q}", json_mode=True)
+        if "reservations" not in data:
+            raise RuntimeError("unexpected answer from the booking system")
+        for r in data["reservations"]:
             rd = datetime.strptime(r["date"], "%m/%d/%Y").date()
             fetched.add(rd)
             s, e = hm(r["fromTime"]), hm(r["toTime"])
             if e <= s:
-                e += 24 * 60  # runs past midnight
+                e += 24 * 60
             busy.setdefault((rd, r["court"]), []).append((s, e))
         fetched.add(d)
 
-    step = club.get("slot_minutes", 60)
+    step = int(club.get("slot_minutes", 60))
     start, end = hm(club.get("open_from", "06:00")), hm(club.get("open_until", "23:00"))
     if end <= start:
         end += 24 * 60
     slots = []
     for d in days:
-        for cid, cname in courts.items():
+        for cid, c in courts.items():
             for t in range(start, end - step + 1, step):
                 if any(s < t + step and t < e for s, e in busy.get((d, cid), [])):
                     continue
                 begin = datetime.combine(d, datetime.min.time(), TZ) + timedelta(minutes=t)
                 if begin <= now:
                     continue
-                slots.append({"club": club["name"], "court": cname, "start": begin, "minutes": step})
-    return slots
+                slots.append({"club": club["name"], "court": c["name"], "start": begin,
+                              "minutes": step, "url": ebusy_booking_url(club, d)})
+    return slots, [{"name": c["name"], "info": c["info"]} for c in courts.values()]
 
 
 ADAPTERS = {"ebusy": ebusy_free_slots}
@@ -85,16 +94,14 @@ ADAPTERS = {"ebusy": ebusy_free_slots}
 # ---------- filtering / formatting ----------
 def in_windows(minute_of_day, windows):
     for w in windows:
-        a, b = w.split("-")
-        a, b = hm(a), hm(b)
+        a, b = (hm(x) for x in w.split("-"))
         if (a <= minute_of_day < b) if a < b else (minute_of_day >= a or minute_of_day < b):
             return True
     return False
 
 
 def apply_filters(club, slots):
-    out = []
-    courts = set(club.get("courts") or [])
+    out, courts = [], set(club.get("courts") or [])
     for s in slots:
         if courts and s["court"] not in courts:
             continue
@@ -126,25 +133,9 @@ def group_text(slots):
     return "\n".join(lines).strip()
 
 
-def send_email(subject, body, to):
-    user, pw = os.environ.get("SMTP_USER"), os.environ.get("SMTP_PASSWORD")
-    if not (user and pw):
-        raise RuntimeError("SMTP_USER / SMTP_PASSWORD not set")
-    host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    port = int(os.environ.get("SMTP_PORT", "465"))
-    msg = EmailMessage()
-    msg["From"], msg["To"], msg["Subject"] = user, os.environ.get("EMAIL_TO") or to, subject
-    msg.set_content(body)
-    with smtplib.SMTP_SSL(host, port, context=ssl.create_default_context()) as s:
-        s.login(user, pw)
-        s.send_message(msg)
-
-
+# ---------- notifications ----------
 def send_push(title, body, click_url=None):
     """Push notification via ntfy (https://ntfy.sh). Topic comes from NTFY_TOPIC."""
-    topic = os.environ.get("NTFY_TOPIC")
-    if not topic:
-        raise RuntimeError("NTFY_TOPIC not set")
     server = os.environ.get("NTFY_SERVER", "https://ntfy.sh").rstrip("/")
     data = body.encode("utf-8")
     if len(data) > 3900:  # ntfy message limit is 4096 bytes
@@ -152,71 +143,101 @@ def send_push(title, body, click_url=None):
     headers = {"Title": title.encode("utf-8").decode("latin-1"), "Tags": "tennis", "Priority": "high"}
     if click_url:
         headers["Click"] = click_url
-    req = urllib.request.Request(f"{server}/{urllib.parse.quote(topic)}", data=data, headers=headers, method="POST")
+    req = urllib.request.Request(f"{server}/{urllib.parse.quote(os.environ['NTFY_TOPIC'])}",
+                                 data=data, headers=headers, method="POST")
     with urllib.request.urlopen(req, timeout=30) as r:
         r.read()
 
 
+def send_email(subject, body, to):
+    user, pw = os.environ["SMTP_USER"], os.environ["SMTP_PASSWORD"]
+    msg = EmailMessage()
+    msg["From"], msg["To"], msg["Subject"] = user, os.environ.get("EMAIL_TO") or to or user, subject
+    msg.set_content(body)
+    host, port = os.environ.get("SMTP_HOST", "smtp.gmail.com"), int(os.environ.get("SMTP_PORT", "465"))
+    with smtplib.SMTP_SSL(host, port, context=ssl.create_default_context()) as s:
+        s.login(user, pw)
+        s.send_message(msg)
+
+
+def notify(cfg, new, current, errors):
+    subject = f"{len(new)} new tennis slot(s) - " + ", ".join(sorted({s['club'] for s in new}))
+    sent = False
+    if os.environ.get("NTFY_TOPIC"):
+        first = sorted(new, key=lambda s: s["start"])[0]
+        send_push(subject, group_text(new), first["url"])
+        sent = True
+        print(f"pushed {len(new)} new slot(s)")
+    if os.environ.get("SMTP_USER") and os.environ.get("SMTP_PASSWORD"):
+        parts = [f"{len(new)} new free slot(s):\n", group_text(new)]
+        if cfg.get("email", {}).get("include_all_free", True):
+            parts += [f"\n\nAll free slots in your window ({len(current)}):\n", group_text(current)]
+        if errors:
+            parts += ["\n\nProblems during this check:\n" + "\n".join(errors)]
+        send_email(subject, "\n".join(parts), cfg.get("email", {}).get("to"))
+        sent = True
+        print(f"emailed {len(new)} new slot(s)")
+    if not sent:
+        raise RuntimeError("no notification channel set up: add the NTFY_TOPIC secret (or SMTP_USER/SMTP_PASSWORD)")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="config.toml")
+    ap.add_argument("--config", default="config.json")
     ap.add_argument("--state", default="state.json")
-    ap.add_argument("--dry-run", action="store_true", help="print instead of emailing; don't save state")
+    ap.add_argument("--slots", default="slots.json")
+    ap.add_argument("--dry-run", action="store_true", help="print instead of notifying; write nothing")
     args = ap.parse_args()
 
-    cfg = tomllib.loads(Path(args.config).read_text())
+    cfg = json.loads(Path(args.config).read_text())
     now = datetime.now(TZ)
     state_path = Path(args.state)
     seen = set(json.loads(state_path.read_text())["free"]) if state_path.exists() else None
 
-    current, errors = [], []
+    current, errors, club_info = [], [], {}
     for club in cfg["clubs"]:
+        if not club.get("enabled", True):
+            continue
         try:
-            current += apply_filters(club, ADAPTERS[club["type"]](club, now))
-        except Exception as e:  # keep going with other clubs
+            slots, courts = ADAPTERS[club["type"]](club, now)
+            current += apply_filters(club, slots)
+            club_info[club["name"]] = {"courts": courts, "booking_url": ebusy_booking_url(club),
+                                       "days_ahead": club.get("days_ahead")}
+        except Exception as e:  # keep going with the other clubs
             errors.append(f"{club['name']}: {e}")
-
-    cur_keys = {key(s) for s in current}
-    new = [s for s in current if seen is None or key(s) not in seen]
-
     if errors:
         print("ERRORS:\n" + "\n".join(errors), file=sys.stderr)
 
-    if new:
-        parts = [f"{len(new)} new free slot(s):\n", group_text(new)]
-        if cfg["email"].get("include_all_free", True):
-            parts += [f"\n\nAll free slots in your window ({len(current)}):\n", group_text(current)]
-        if errors:
-            parts += ["\n\nProblems during this check:\n" + "\n".join(errors)]
-        body = "\n".join(parts)
-        subject = f"{len(new)} new tennis slot(s) - " + ", ".join(sorted({s['club'] for s in new}))
-        if args.dry_run:
-            print(subject + "\n\n" + body)
-        else:
-            sent = False
-            if os.environ.get("NTFY_TOPIC"):
-                clubs_new = [c for c in cfg["clubs"] if any(s["club"] == c["name"] for s in new)]
-                click = f"{clubs_new[0]['base_url']}/lite-module/{clubs_new[0].get('module', 1)}" if clubs_new else None
-                push_body = group_text(new)  # push: only the new slots, keeps it short
-                send_push(subject, push_body, click)
-                sent = True
-                print(f"pushed {len(new)} new slot(s)")
-            if os.environ.get("SMTP_USER") and os.environ.get("SMTP_PASSWORD"):
-                send_email(subject, body, cfg["email"]["to"])
-                sent = True
-                print(f"emailed {len(new)} new slot(s)")
-            if not sent:
-                raise RuntimeError("no notification channel configured: set NTFY_TOPIC (or SMTP_USER/SMTP_PASSWORD)")
+    cur_keys = {key(s) for s in current}
+    new = [s for s in current if seen is None or key(s) not in seen]
+    new_keys = {key(s) for s in new}
+    paused = cfg.get("paused", False)
+
+    if args.dry_run:
+        print(f"{len(new)} new, {len(current)} free in window\n" + group_text(new))
+        return
+
+    # Write what the app shows first, so it is up to date even if notifying fails
+    Path(args.slots).write_text(json.dumps({
+        "checked": now.isoformat(timespec="seconds"),
+        "paused": paused,
+        "errors": errors,
+        "clubs": club_info,
+        "free": [{"club": s["club"], "court": s["court"], "start": s["start"].isoformat(timespec="minutes"),
+                  "minutes": s["minutes"], "url": s["url"], "new": key(s) in new_keys}
+                 for s in sorted(current, key=lambda s: (s["start"], s["club"], s["court"]))],
+    }, ensure_ascii=False, indent=1) + "\n")
+
+
+    if new and not paused:
+        notify(cfg, new, current, errors)
     else:
-        print(f"no new slots ({len(current)} free in window)")
+        print("paused, no notifications" if paused else f"no new slots ({len(current)} free in window)")
 
-    if not args.dry_run and not errors:
-        state_path.write_text(json.dumps({"checked": now.isoformat(), "free": sorted(cur_keys)}, indent=1))
-    elif not args.dry_run and errors:
-        # keep old knowledge for failed clubs so they don't re-alert everything next time
-        keep = {k for k in (seen or set()) if any(k.startswith(e.split(":")[0] + "|") for e in errors)}
-        state_path.write_text(json.dumps({"checked": now.isoformat(), "free": sorted(cur_keys | keep)}, indent=1))
-
+    # Remember what was free, keeping old entries for clubs that failed this time
+    failed = {e.split(":")[0] for e in errors}
+    keep = {k for k in (seen or set()) if k.split("|")[0] in failed}
+    state_path.write_text(json.dumps({"checked": now.isoformat(), "free": sorted(cur_keys | keep)}, indent=1) + "\n")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Court Watch</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Court Watch">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F3F5F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E141A" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: one column, sticky header, iOS-style tab bar; slots read like a court sheet: time on the left, court chips on the right. */
+:root {
+  --bg: #F3F5F7; --surface: #FFFFFF; --ink: #14202B; --muted: #5E6B78; --line: #DCE2E8;
+  --accent: #1F5FA8; --accent-ink: #FFFFFF; --accent-soft: #E3EDF8;
+  --clay: #B4532A; --clay-soft: #F7E7DF; --hard: #1F5FA8; --hard-soft: #E3EDF8;
+  --new: #2E8B57; --warn: #B7791F; --warn-soft: #FBF0DC; --danger: #B42318;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0E141A; --surface: #17202A; --ink: #E8EEF3; --muted: #93A1AE; --line: #26323E;
+  --accent: #6FA8E8; --accent-ink: #0E141A; --accent-soft: #1B2B3D;
+  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D;
+  --new: #5CC48A; --warn: #E3B05C; --warn-soft: #33281A; --danger: #F07A6E;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0E141A; --surface: #17202A; --ink: #E8EEF3; --muted: #93A1AE; --line: #26323E;
+  --accent: #6FA8E8; --accent-ink: #0E141A; --accent-soft: #1B2B3D;
+  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D;
+  --new: #5CC48A; --warn: #E3B05C; --warn-soft: #33281A; --danger: #F07A6E;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.45 var(--body);
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 30; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+a { color: var(--accent); }
+
+.wrap { max-width: 640px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* header */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+header.top .wrap { display: flex; align-items: center; gap: 12px; padding-block: 12px; }
+.brand { white-space: nowrap; font-family: var(--display); font-weight: 700; font-size: 25px; letter-spacing: .01em; line-height: 1; flex: 1; min-width: 0; }
+.status { white-space: normal; font-size: 12.5px; color: var(--muted); margin-top: 4px; font-family: var(--body); font-weight: 400; letter-spacing: 0; }
+.iconbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; height: 38px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; }
+.iconbtn svg { width: 17px; height: 17px; }
+.iconbtn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.iconbtn:disabled { opacity: .55; }
+.spin svg { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* tab bar */
+nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+nav.tabs .wrap { display: grid; grid-template-columns: 1fr 1fr; }
+nav.tabs button { background: none; border: 0; padding: 9px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11.5px; font-weight: 600; color: var(--muted); }
+nav.tabs button svg { width: 24px; height: 24px; }
+nav.tabs button[aria-selected="true"] { color: var(--accent); }
+
+main .wrap { padding-block: 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+/* summary + filters */
+.summary { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.summary .big { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: .9; font-variant-numeric: tabular-nums; }
+.summary .lbl { color: var(--muted); font-size: 14px; }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; font-size: 13.5px; font-weight: 500; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.notice { border-radius: var(--r); padding: 12px 14px; background: var(--warn-soft); color: var(--ink); font-size: 14px; border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); }
+.notice b { color: var(--warn); }
+
+/* day sheet */
+.day { display: flex; flex-direction: column; }
+.dayhead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 0 2px 8px; }
+.dayhead h2 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: .02em; text-transform: uppercase; }
+.dayhead span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.row { display: grid; grid-template-columns: 74px 1fr; gap: 12px; padding: 11px 14px; align-items: start; }
+.row + .row { border-top: 1px solid var(--line); }
+.time { font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.time small { display: block; font-family: var(--body); font-size: 12px; font-weight: 400; color: var(--muted); }
+.courts { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.court { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; border-radius: 8px; padding: 5px 9px; font-size: 13.5px; font-weight: 600; background: var(--hard-soft); color: var(--hard); border: 1px solid transparent; }
+.court.clay { background: var(--clay-soft); color: var(--clay); }
+.court .sfc { font-weight: 400; font-size: 11.5px; opacity: .85; }
+.court.isnew { border-color: var(--new); }
+.court.isnew::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--new); }
+.clubtag { font-size: 11.5px; color: var(--muted); width: 100%; }
+
+.empty { text-align: center; padding: 36px 16px; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); }
+.empty h3 { margin: 0 0 6px; color: var(--ink); font-family: var(--display); font-size: 22px; font-weight: 600; }
+
+/* settings */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.card > header { padding: 14px 16px 4px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.card h3 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 22px; letter-spacing: .01em; }
+.card .sub { color: var(--muted); font-size: 13px; }
+.field { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+.field + .field { border-top: 1px solid var(--line); }
+.field .lab { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-weight: 600; }
+.field .hint { color: var(--muted); font-size: 13px; font-weight: 400; }
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.stepper button { border: 0; background: var(--bg); width: 40px; height: 36px; font-size: 20px; line-height: 1; }
+.stepper output { min-width: 44px; text-align: center; font-family: var(--display); font-weight: 600; font-size: 22px; font-variant-numeric: tabular-nums; }
+.toggle { position: relative; width: 51px; height: 31px; flex: none; }
+.toggle input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+.toggle span { position: absolute; inset: 0; border-radius: 999px; background: var(--line); transition: background .2s; }
+.toggle span::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+.toggle input:checked + span { background: var(--new); }
+.toggle input:checked + span::after { transform: translateX(20px); }
+.toggle input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ranges { display: flex; flex-direction: column; gap: 8px; }
+.range { display: flex; align-items: center; gap: 8px; }
+.range input[type=time] { flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 7px 10px; font-variant-numeric: tabular-nums; }
+.range .to { color: var(--muted); font-size: 13px; }
+.x { border: 0; background: none; color: var(--muted); width: 34px; height: 34px; border-radius: 50%; font-size: 20px; flex: none; }
+.link { border: 0; background: none; color: var(--accent); font-weight: 600; padding: 4px 0; text-align: left; }
+.link.danger { color: var(--danger); }
+.textin { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.btn { border: 0; border-radius: 12px; padding: 12px 16px; font-weight: 600; background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
+.savebar { position: fixed; left: 0; right: 0; bottom: calc(60px + env(safe-area-inset-bottom, 0px)); z-index: 19; }
+.savebar .wrap { padding-block: 10px; display: flex; gap: 10px; }
+.savebar .btn { flex: 1; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+
+/* connect */
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; color: var(--ink); }
+.steps li::marker { color: var(--muted); font-weight: 600; }
+code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius: 5px; border: 1px solid var(--line); word-break: break-all; }
+.err { color: var(--danger); font-size: 13.5px; }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); top: calc(76px + env(safe-area-inset-top, 0px)); z-index: 40; background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 6px 24px rgba(0,0,0,.2); }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">Court Watch<div class="status" id="status">Loading…</div></div>
+    <button class="iconbtn" id="refreshBtn" aria-label="Reload">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+    </button>
+    <button class="iconbtn primary" id="checkBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Check
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- CONNECT -->
+  <section id="connectView" hidden>
+    <div class="wrap">
+      <div class="card">
+        <header><h3>Connect to GitHub</h3></header>
+        <div class="field">
+          <ol class="steps">
+            <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → New fine-grained token</a>.</li>
+            <li>Repository access: <b>Only select repositories</b> → your watcher repo.</li>
+            <li>Permissions: <b>Contents</b> Read and write, <b>Actions</b> Read and write.</li>
+            <li>Generate, copy, paste it below. It stays on this phone only.</li>
+          </ol>
+        </div>
+        <div class="field">
+          <label class="lab" for="repoIn">Repository</label>
+          <input class="textin" id="repoIn" autocapitalize="off" autocorrect="off" spellcheck="false" value="mehdiagassi/tennis-slot-watcher">
+        </div>
+        <div class="field">
+          <label class="lab" for="tokenIn">Token</label>
+          <input class="textin" id="tokenIn" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="github_pat_…">
+          <div class="err" id="connectErr" hidden></div>
+          <button class="btn" id="connectBtn">Connect</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLOTS -->
+  <section id="slotsView" hidden>
+    <div class="wrap">
+      <div class="summary"><span class="big" id="freeCount">–</span><span class="lbl" id="freeLbl">free slots</span></div>
+      <div class="chips" id="filterChips" role="toolbar" aria-label="Filter"></div>
+      <div id="notices"></div>
+      <div id="days"></div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settingsView" hidden>
+    <div class="wrap" id="settingsWrap"></div>
+  </section>
+</main>
+
+<div class="savebar" id="savebar" hidden>
+  <div class="wrap">
+    <button class="btn ghost" id="discardBtn">Discard</button>
+    <button class="btn" id="saveBtn">Save settings</button>
+  </div>
+</div>
+
+<nav class="tabs" id="tabs" hidden>
+  <div class="wrap" role="tablist">
+    <button role="tab" id="tabSlots" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="m9 15 2 2 4-4"/></svg>
+      Free slots
+    </button>
+    <button role="tab" id="tabSettings" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+      Settings
+    </button>
+  </div>
+</nav>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+    del(k) { try { localStorage.removeItem(k); } catch {} },
+  };
+  const DAYS = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+  const DAYS_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+  const S = {
+    repo: store.get("cw.repo") || "",
+    token: store.get("cw.token") || "",
+    slots: null,           // slots.json
+    config: null,          // saved config.json
+    configSha: null,
+    draft: null,           // edited copy
+    filter: store.get("cw.filter") || "all",
+    tab: store.get("cw.tab") || "slots",
+  };
+
+  // ---------- GitHub API ----------
+  async function gh(path, opts = {}) {
+    const res = await fetch(`https://api.github.com/repos/${S.repo}${path}`, {
+      ...opts,
+      headers: {
+        "Accept": opts.raw ? "application/vnd.github.raw+json" : "application/vnd.github+json",
+        "Authorization": `Bearer ${S.token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+        ...(opts.body ? { "Content-Type": "application/json" } : {}),
+      },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      let msg = `${res.status}`;
+      try { const j = await res.json(); msg = j.message || msg; } catch {}
+      const e = new Error(msg); e.status = res.status; throw e;
+    }
+    if (res.status === 204) return null;
+    return opts.raw ? res.text() : res.json();
+  }
+  const b64decode = (s) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, "")), c => c.charCodeAt(0)));
+  const b64encode = (s) => { const b = new TextEncoder().encode(s); let bin = ""; b.forEach(x => bin += String.fromCharCode(x)); return btoa(bin); };
+
+  async function loadAll() {
+    setStatus("Loading…");
+    const [slotsRes, cfgRes] = await Promise.allSettled([
+      gh("/contents/slots.json", { raw: true }),
+      gh("/contents/config.json"),
+    ]);
+    if (cfgRes.status === "rejected") throw cfgRes.reason;
+    S.config = JSON.parse(b64decode(cfgRes.value.content));
+    S.configSha = cfgRes.value.sha;
+    if (!S.draft || !isDirty()) S.draft = clone(S.config);
+    S.slots = slotsRes.status === "fulfilled" ? JSON.parse(slotsRes.value) : null;
+    render();
+  }
+
+  // ---------- helpers ----------
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const isDirty = () => S.draft && S.config && JSON.stringify(S.draft) !== JSON.stringify(S.config);
+  const el = (tag, attrs = {}, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") n.className = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else if (v === true) n.setAttribute(k, "");
+      else if (v !== false && v != null) n.setAttribute(k, v);
+    }
+    for (const k of kids.flat()) if (k != null) n.append(k.nodeType ? k : document.createTextNode(String(k)));
+    return n;
+  };
+  const pad = (n) => String(n).padStart(2, "0");
+  // Slot start strings are Berlin local time with offset; show wall-clock time as written.
+  // Slots 00:00–01:59 belong to the previous day's sheet on the booking page
+  const sheetDay = (p) => {
+    if (p.hh >= 2) return { dk: p.dateKey, dow: p.dow };
+    const d = new Date(Date.UTC(p.y, p.m - 1, p.d - 1));
+    return { dk: d.toISOString().slice(0, 10), dow: d.getUTCDay() };
+  };
+  const parseLocal = (iso) => {
+    const [d, t] = iso.split("T"); const [y, m, dd] = d.split("-").map(Number); const [hh, mm] = t.slice(0, 5).split(":").map(Number);
+    return { y, m, d: dd, hh, mm, dateKey: d, dow: new Date(Date.UTC(y, m - 1, dd)).getUTCDay() };
+  };
+  const addMin = (hh, mm, add) => { const t = (hh * 60 + mm + add) % 1440; return `${pad(Math.floor(t / 60))}:${pad(t % 60)}`; };
+  function ago(iso) {
+    const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins} min ago`;
+    const h = Math.round(mins / 60); return h < 24 ? `${h} h ago` : `${Math.round(h / 24)} d ago`;
+  }
+  function surfaceOf(clubName, courtName) {
+    const c = S.slots?.clubs?.[clubName]?.courts?.find(c => c.name === courtName);
+    const info = (c?.info || "").toLowerCase();
+    if (/sand|clay|asche/.test(info)) return { cls: "clay", label: "Sand" };
+    if (/hard/.test(info)) return { cls: "", label: "Hard" };
+    if (/teppich|carpet|granulat/.test(info)) return { cls: "", label: "Carpet" };
+    return { cls: "", label: "" };
+  }
+  let toastTimer;
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 3200); }
+  function setStatus(txt) { $("status").textContent = txt; }
+
+  // ---------- render ----------
+  function render() {
+    const connected = !!(S.repo && S.token);
+    $("connectView").hidden = connected;
+    $("tabs").hidden = !connected;
+    $("checkBtn").hidden = !connected;
+    $("refreshBtn").hidden = !connected;
+    if (!connected) { $("slotsView").hidden = $("settingsView").hidden = true; $("savebar").hidden = true; setStatus("Not connected"); return; }
+    $("slotsView").hidden = S.tab !== "slots";
+    $("settingsView").hidden = S.tab !== "settings";
+    $("tabSlots").setAttribute("aria-selected", S.tab === "slots");
+    $("tabSettings").setAttribute("aria-selected", S.tab === "settings");
+    $("savebar").hidden = !(S.tab === "settings" && isDirty());
+    if (S.slots?.checked) setStatus(`Checked ${ago(S.slots.checked)}${S.config?.paused ? " · alerts paused" : ""}`);
+    else setStatus("No check has run yet");
+    renderSlots();
+    renderSettings();
+  }
+
+  function renderSlots() {
+    const free = S.slots?.free || [];
+    const clubs = [...new Set(free.map(s => s.club))];
+    const surfaces = [...new Set(free.map(s => surfaceOf(s.club, s.court).label).filter(Boolean))];
+    // filters
+    const opts = [["all", "All"], ["evening", "After 17:00"], ["weekend", "Weekend"], ...surfaces.map(s => ["sfc:" + s, s]), ...(clubs.length > 1 ? clubs.map(c => ["club:" + c, c]) : [])];
+    if (!opts.some(o => o[0] === S.filter)) S.filter = "all";
+    $("filterChips").replaceChildren(...opts.map(([k, label]) => el("button", {
+      class: "chip", "aria-pressed": String(S.filter === k),
+      onclick: () => { S.filter = k; store.set("cw.filter", k); renderSlots(); },
+    }, label)));
+
+    const shown = free.filter(s => {
+      const p = parseLocal(s.start);
+      if (S.filter === "evening") return p.hh >= 17 || p.hh < 2;
+      if (S.filter === "weekend") { const w = sheetDay(p).dow; return w === 0 || w === 6; }
+      if (S.filter.startsWith("sfc:")) return surfaceOf(s.club, s.court).label === S.filter.slice(4);
+      if (S.filter.startsWith("club:")) return s.club === S.filter.slice(5);
+      return true;
+    });
+    $("freeCount").textContent = shown.length;
+    const days = new Set(shown.map(s => sheetDay(parseLocal(s.start)).dk)).size;
+    $("freeLbl").textContent = `free slot${shown.length === 1 ? "" : "s"}${days ? ` over ${days} day${days === 1 ? "" : "s"}` : ""}`;
+
+    const notes = [];
+    if (S.config?.paused) notes.push(el("div", { class: "notice" }, el("b", {}, "Alerts paused. "), "Checks still run, but you won't get notifications. Turn them back on in Settings."));
+    for (const e of S.slots?.errors || []) notes.push(el("div", { class: "notice" }, el("b", {}, "Last check had a problem: "), e));
+    $("notices").replaceChildren(...notes);
+
+    if (!S.slots) {
+      $("days").replaceChildren(el("div", { class: "empty" }, el("h3", {}, "No results yet"), "Tap Check now. The first check takes about a minute, then pull results with the reload button."));
+      return;
+    }
+    if (!shown.length) {
+      $("days").replaceChildren(el("div", { class: "empty" }, el("h3", {}, "Nothing free"), free.length ? "No free slots match this filter." : "Every court is booked in your time window. You'll get a notification when one opens up."));
+      return;
+    }
+    // group: day -> time -> slots
+    const byDay = new Map();
+    for (const s of shown) {
+      const p = parseLocal(s.start);
+      const { dk, dow } = sheetDay(p);
+      if (!byDay.has(dk)) byDay.set(dk, { dow, times: new Map() });
+      const tk = `${pad(p.hh)}:${pad(p.mm)}`;
+      const day = byDay.get(dk);
+      if (!day.times.has(tk)) day.times.set(tk, { p, list: [] });
+      day.times.get(tk).list.push(s);
+    }
+    const todayKey = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Berlin" });
+    const tomorrowKey = new Date(Date.now() + 864e5).toLocaleDateString("sv-SE", { timeZone: "Europe/Berlin" });
+    const out = [];
+    for (const [dk, day] of [...byDay.entries()].sort()) {
+      const [y, m, d] = dk.split("-");
+      const name = dk === todayKey ? "Today" : dk === tomorrowKey ? "Tomorrow" : DAYS_LONG[day.dow];
+      let count = 0; day.times.forEach(t => count += t.list.length);
+      const rows = [...day.times.entries()].sort((a, b) => {
+        const ka = a[1].p.hh < 6 ? a[0].replace(/^0/, "3") : a[0], kb = b[1].p.hh < 6 ? b[0].replace(/^0/, "3") : b[0];
+        return ka < kb ? -1 : 1;
+      }).map(([tk, t]) => {
+        const multiClub = new Set(t.list.map(s => s.club)).size > 1 || byClubCount() > 1;
+        return el("div", { class: "row" },
+          el("div", { class: "time" }, tk, el("small", {}, "until " + addMin(t.p.hh, t.p.mm, t.list[0].minutes))),
+          el("div", { class: "courts" }, t.list.sort((a, b) => (a.club + a.court).localeCompare(b.club + b.court, "de", { numeric: true })).map(s => {
+            const sf = surfaceOf(s.club, s.court);
+            const isNew = s.new === true;
+            const href = /^https:\/\//.test(s.url || "") ? s.url : null;
+            return el("a", { class: `court ${sf.cls}${isNew ? " isnew" : ""}`, href, target: "_blank", rel: "noopener", title: isNew ? "New since the previous check" : null },
+              (multiClub ? s.club.split(" ")[0] + " · " : "") + s.court.replace(/^Platz\s*/i, "P"), sf.label ? el("span", { class: "sfc" }, sf.label) : null);
+          })));
+      });
+      out.push(el("section", { class: "day" },
+        el("div", { class: "dayhead" }, el("h2", {}, `${name} ${d}.${m}.`), el("span", {}, `${count} free`)),
+        el("div", { class: "sheet" }, rows)));
+    }
+    $("days").replaceChildren(...out);
+  }
+  const byClubCount = () => new Set((S.slots?.free || []).map(s => s.club)).size;
+
+  function toggleField(id, label, hint, checked, onchange) {
+    return el("div", { class: "field" },
+      el("div", { class: "lab" },
+        el("label", { for: id }, label, hint ? el("div", { class: "hint" }, hint) : null),
+        el("span", { class: "toggle" }, el("input", { type: "checkbox", id, role: "switch", checked: !!checked, onchange: (e) => onchange(e.target.checked) }), el("span"))));
+  }
+
+  function rangeEditor(club, key, idx, title, hint) {
+    const list = club[key] || (club[key] = []);
+    const wrap = el("div", { class: "ranges" });
+    list.forEach((r, i) => {
+      const [a, b] = r.split("-");
+      const upd = () => { const from = $(`${key}-${idx}-${i}-a`).value, to = $(`${key}-${idx}-${i}-b`).value; if (from && to) { list[i] = `${from}-${to}`; afterEdit(false); } };
+      wrap.append(el("div", { class: "range" },
+        el("input", { type: "time", id: `${key}-${idx}-${i}-a`, value: a, step: 1800, "aria-label": "From", onchange: upd }),
+        el("span", { class: "to" }, "to"),
+        el("input", { type: "time", id: `${key}-${idx}-${i}-b`, value: b, step: 1800, "aria-label": "Until", onchange: upd }),
+        el("button", { class: "x", "aria-label": "Remove time range", onclick: () => { list.splice(i, 1); afterEdit(); } }, "×")));
+    });
+    return el("div", { class: "field" },
+      el("div", { class: "lab" }, el("span", {}, title, el("div", { class: "hint" }, list.length ? hint : "Any time"))),
+      wrap,
+      el("button", { class: "link", onclick: () => { list.push(key === "weekend_times" ? "09:00-18:00" : "18:00-22:00"); afterEdit(); } }, "+ Add time range"));
+  }
+
+  function renderSettings() {
+    const c = S.draft; if (!c) return;
+    const wrap = $("settingsWrap");
+    const scrollY = window.scrollY;
+    const parts = [];
+
+    parts.push(el("div", { class: "card" },
+      el("header", {}, el("h3", {}, "Notifications")),
+      toggleField("pausedT", "Send alerts", "Push a notification when a slot opens up", !c.paused, (v) => { c.paused = !v; afterEdit(); })));
+
+    c.clubs.forEach((club, idx) => {
+      const info = S.slots?.clubs?.[club.name];
+      const max = club.max_days_ahead || 28;
+      const courts = info?.courts || [];
+      const sel = new Set(club.courts || []);
+      const allOn = sel.size === 0;
+      const courtChips = courts.length ? el("div", { class: "chips", style: "flex-wrap:wrap;margin:0;padding:0" }, courts.map(ct => {
+        const on = allOn || sel.has(ct.name);
+        return el("button", { class: "chip", "aria-pressed": String(on), title: ct.info, onclick: () => {
+          let cur = allOn ? courts.map(x => x.name) : [...sel];
+          cur = on ? cur.filter(n => n !== ct.name) : [...cur, ct.name];
+          if (!cur.length) { toast("Keep at least one court"); return; }
+          club.courts = cur.length === courts.length ? [] : cur; afterEdit();
+        } }, ct.name.replace(/^Platz\s*/i, "Platz "), ct.info ? el("span", { class: "sfc", style: "opacity:.7;font-size:11.5px" }, " · " + (ct.info.match(/\(([^)]+)\)/)?.[1] || ct.info)) : null);
+      })) : el("div", { class: "hint" }, "Courts appear here after the first check.");
+
+      parts.push(el("div", { class: "card" },
+        el("header", {}, el("div", {}, el("h3", {}, club.name), el("div", { class: "sub" }, club.base_url.replace(/^https:\/\//, ""))),
+          el("span", { class: "toggle" }, el("input", { type: "checkbox", id: `en-${idx}`, role: "switch", "aria-label": `Watch ${club.name}`, checked: club.enabled !== false, onchange: (e) => { club.enabled = e.target.checked; afterEdit(); } }), el("span"))),
+        el("div", { class: "field" },
+          el("div", { class: "lab" },
+            el("span", {}, "Days ahead", el("div", { class: "hint" }, club.max_days_ahead ? `Club books up to ${club.max_days_ahead} days ahead` : "Today plus this many days")),
+            el("div", { class: "stepper" },
+              el("button", { "aria-label": "Fewer days", onclick: () => { club.days_ahead = Math.max(0, (club.days_ahead ?? 5) - 1); afterEdit(); } }, "−"),
+              el("output", {}, club.days_ahead ?? 5),
+              el("button", { "aria-label": "More days", onclick: () => { if ((club.days_ahead ?? 5) >= max) { toast(`This club only allows ${max} days ahead`); return; } club.days_ahead = (club.days_ahead ?? 5) + 1; afterEdit(); } }, "+")))),
+        el("div", { class: "field" }, el("div", { class: "lab" }, el("span", {}, "Courts", el("div", { class: "hint" }, allOn ? "All courts" : `${sel.size} of ${courts.length || sel.size}`))), courtChips),
+        rangeEditor(club, "weekday_times", idx, "Weekdays", "Mon–Fri, slot must start in a range"),
+        rangeEditor(club, "weekend_times", idx, "Weekends", "Sat–Sun, slot must start in a range"),
+        c.clubs.length > 1 ? el("div", { class: "field" }, el("button", { class: "link danger", onclick: (e) => {
+          if (e.currentTarget.dataset.armed) { c.clubs.splice(idx, 1); afterEdit(); return; }
+          e.currentTarget.dataset.armed = "1"; e.currentTarget.textContent = `Tap again to remove ${club.name}`;
+        } }, "Remove club")) : null));
+    });
+
+    // add club
+    const addErr = el("div", { class: "err", hidden: true });
+    parts.push(el("div", { class: "card" },
+      el("header", {}, el("div", {}, el("h3", {}, "Add a club"), el("div", { class: "sub" }, "Clubs that book through eBuSy (…ebusy.de)"))),
+      el("div", { class: "field" },
+        el("label", { class: "lab", for: "newUrl" }, "Booking page link"),
+        el("input", { class: "textin", id: "newUrl", inputmode: "url", autocapitalize: "off", placeholder: "https://yourclub.ebusy.de/lite-module/1" }),
+        el("label", { class: "lab", for: "newName" }, "Name"),
+        el("input", { class: "textin", id: "newName", placeholder: "e.g. TC Blau-Weiss" }),
+        el("label", { class: "lab", for: "newMax" }, "Max days you can book ahead", el("span", { class: "hint" }, "optional")),
+        el("input", { class: "textin", id: "newMax", inputmode: "numeric", placeholder: "e.g. 7" }),
+        addErr,
+        el("button", { class: "btn ghost", onclick: () => {
+          const m = $("newUrl").value.trim().match(/^https:\/\/([a-z0-9-]+\.ebusy\.de)\/lite-module\/(\d+)/i);
+          const name = $("newName").value.trim();
+          addErr.hidden = true;
+          if (!m) { addErr.textContent = "Paste the club's eBuSy booking link, like https://club.ebusy.de/lite-module/1. Other booking systems need a code change."; addErr.hidden = false; return; }
+          if (!name) { addErr.textContent = "Give the club a name."; addErr.hidden = false; return; }
+          if (c.clubs.some(x => x.name === name)) { addErr.textContent = "You already have a club with that name."; addErr.hidden = false; return; }
+          const max = parseInt($("newMax").value, 10);
+          c.clubs.push({ name, type: "ebusy", enabled: true, base_url: "https://" + m[1].toLowerCase(), module: +m[2],
+            days_ahead: max > 0 ? Math.min(max, 7) : 7, ...(max > 0 ? { max_days_ahead: max } : {}),
+            open_from: "06:00", open_until: "23:00", slot_minutes: 60, courts: [], weekday_times: [], weekend_times: [] });
+          afterEdit(); toast(`${name} added. Save to start watching it.`);
+        } }, "Add club"))));
+
+    // connection
+    parts.push(el("div", { class: "card" },
+      el("header", {}, el("h3", {}, "Connection")),
+      el("div", { class: "field" },
+        el("div", { class: "hint" }, "Repository ", el("code", {}, S.repo)),
+        el("button", { class: "link danger", onclick: () => { store.del("cw.token"); S.token = ""; S.draft = null; render(); } }, "Disconnect this phone"))));
+
+    wrap.replaceChildren(...parts);
+    window.scrollTo(0, scrollY);
+  }
+
+  function afterEdit(rerender = true) {
+    if (rerender) renderSettings();
+    $("savebar").hidden = !isDirty();
+  }
+
+  // ---------- actions ----------
+  async function save() {
+    const btn = $("saveBtn"); btn.disabled = true; btn.textContent = "Saving…";
+    try {
+      // validate ranges
+      for (const cl of S.draft.clubs) for (const k of ["weekday_times", "weekend_times"]) (cl[k] || []).forEach(r => { if (!/^\d\d:\d\d-\d\d:\d\d$/.test(r)) throw new Error(`Check the times for ${cl.name}`); });
+      const body = JSON.stringify(S.draft, null, 1) + "\n";
+      const res = await gh("/contents/config.json", { method: "PUT", body: JSON.stringify({ message: "Update settings from the app", content: b64encode(body), sha: S.configSha }) });
+      S.configSha = res.content.sha; S.config = clone(S.draft);
+      toast("Saved. A new check runs in about a minute.");
+      render();
+      scheduleReload(75);
+    } catch (e) {
+      toast(e.status === 409 ? "Settings changed elsewhere. Reload and try again." : e.status === 403 || e.status === 404 ? "Can't save: the token needs Contents read and write." : `Couldn't save: ${e.message}`);
+    } finally { btn.disabled = false; btn.textContent = "Save settings"; }
+  }
+
+  async function checkNow() {
+    const btn = $("checkBtn"); btn.disabled = true; btn.classList.add("spin");
+    try {
+      await gh("/actions/workflows/check.yml/dispatches", { method: "POST", body: JSON.stringify({ ref: "main" }) });
+      toast("Checking… results in about a minute.");
+      scheduleReload(70);
+    } catch (e) {
+      btn.disabled = false; btn.classList.remove("spin");
+      toast(e.status === 403 || e.status === 404 ? "Can't start a check: the token needs Actions read and write." : `Couldn't start a check: ${e.message}`);
+    }
+  }
+  let reloadTimer;
+  function scheduleReload(sec) {
+    clearTimeout(reloadTimer);
+    reloadTimer = setTimeout(async () => {
+      try { await loadAll(); } catch {}
+      $("checkBtn").disabled = false; $("checkBtn").classList.remove("spin");
+    }, sec * 1000);
+  }
+
+  async function refresh() {
+    const btn = $("refreshBtn"); btn.classList.add("spin");
+    try { await loadAll(); } catch (e) { handleLoadError(e); } finally { btn.classList.remove("spin"); }
+  }
+  function handleLoadError(e) {
+    if (e.status === 401) { setStatus("Token expired or wrong"); toast("GitHub refused the token. Connect again."); store.del("cw.token"); S.token = ""; render(); }
+    else if (e.status === 404) { setStatus("Repository not found"); toast("Can't find the repository with this token."); }
+    else { setStatus("Offline?"); toast(`Couldn't load: ${e.message}`); }
+  }
+
+  async function connect() {
+    const repo = $("repoIn").value.trim().replace(/^https:\/\/github\.com\//, "").replace(/\/$/, "");
+    const token = $("tokenIn").value.trim();
+    const err = $("connectErr"); err.hidden = true;
+    if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { err.textContent = "Repository should look like owner/name."; err.hidden = false; return; }
+    if (!token) { err.textContent = "Paste your GitHub token."; err.hidden = false; return; }
+    S.repo = repo; S.token = token;
+    const btn = $("connectBtn"); btn.disabled = true; btn.textContent = "Connecting…";
+    try {
+      await loadAll();
+      store.set("cw.repo", repo); store.set("cw.token", token);
+      $("tokenIn").value = "";
+      render();
+    } catch (e) {
+      S.token = "";
+      err.textContent = e.status === 401 ? "GitHub didn't accept that token." : e.status === 404 ? "This token can't see that repository. Check the repository access when creating the token." : `Couldn't connect: ${e.message}`;
+      err.hidden = false;
+    } finally { btn.disabled = false; btn.textContent = "Connect"; }
+  }
+
+  // ---------- wire up ----------
+  $("connectBtn").addEventListener("click", connect);
+  $("tokenIn").addEventListener("keydown", (e) => { if (e.key === "Enter") connect(); });
+  $("refreshBtn").addEventListener("click", refresh);
+  $("checkBtn").addEventListener("click", checkNow);
+  $("saveBtn").addEventListener("click", save);
+  $("discardBtn").addEventListener("click", () => { S.draft = clone(S.config); render(); });
+  $("tabSlots").addEventListener("click", () => { S.tab = "slots"; store.set("cw.tab", "slots"); render(); window.scrollTo(0, 0); });
+  $("tabSettings").addEventListener("click", () => { S.tab = "settings"; store.set("cw.tab", "settings"); render(); window.scrollTo(0, 0); });
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.token && !isDirty()) refresh(); });
+  if (S.repo) $("repoIn").value = S.repo;
+
+  render();
+  if (S.repo && S.token) loadAll().catch(handleLoadError);
+})();
+</script>
+</body>
+</html>
