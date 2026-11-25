@@ -1,7 +1,8 @@
 # Tennis slot watcher settings — edit freely.
 
+# Notifications: push via the ntfy app (secret NTFY_TOPIC) and/or email (SMTP_* secrets).
 [email]
-# Where alerts go. The sender account and password come from secrets, not this file.
+# Only used if email is set up. The sender account and password come from secrets, not this file.
 to = "you@example.com"
 # true  = email lists the NEW slots plus every free slot in the window
 # false = email lists only the new slots

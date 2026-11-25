@@ -140,6 +140,23 @@ def send_email(subject, body, to):
         s.send_message(msg)
 
 
+def send_push(title, body, click_url=None):
+    """Push notification via ntfy (https://ntfy.sh). Topic comes from NTFY_TOPIC."""
+    topic = os.environ.get("NTFY_TOPIC")
+    if not topic:
+        raise RuntimeError("NTFY_TOPIC not set")
+    server = os.environ.get("NTFY_SERVER", "https://ntfy.sh").rstrip("/")
+    data = body.encode("utf-8")
+    if len(data) > 3900:  # ntfy message limit is 4096 bytes
+        data = data[:3850].decode("utf-8", "ignore").rsplit("\n", 1)[0].encode() + "\n… (more)".encode()
+    headers = {"Title": title.encode("utf-8").decode("latin-1"), "Tags": "tennis", "Priority": "high"}
+    if click_url:
+        headers["Click"] = click_url
+    req = urllib.request.Request(f"{server}/{urllib.parse.quote(topic)}", data=data, headers=headers, method="POST")
+    with urllib.request.urlopen(req, timeout=30) as r:
+        r.read()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="config.toml")
@@ -172,12 +189,24 @@ def main():
         if errors:
             parts += ["\n\nProblems during this check:\n" + "\n".join(errors)]
         body = "\n".join(parts)
-        subject = f"🎾 {len(new)} new tennis slot(s) – " + ", ".join(sorted({s['club'] for s in new}))
+        subject = f"{len(new)} new tennis slot(s) - " + ", ".join(sorted({s['club'] for s in new}))
         if args.dry_run:
             print(subject + "\n\n" + body)
         else:
-            send_email(subject, body, cfg["email"]["to"])
-            print(f"emailed {len(new)} new slot(s)")
+            sent = False
+            if os.environ.get("NTFY_TOPIC"):
+                clubs_new = [c for c in cfg["clubs"] if any(s["club"] == c["name"] for s in new)]
+                click = f"{clubs_new[0]['base_url']}/lite-module/{clubs_new[0].get('module', 1)}" if clubs_new else None
+                push_body = group_text(new)  # push: only the new slots, keeps it short
+                send_push(subject, push_body, click)
+                sent = True
+                print(f"pushed {len(new)} new slot(s)")
+            if os.environ.get("SMTP_USER") and os.environ.get("SMTP_PASSWORD"):
+                send_email(subject, body, cfg["email"]["to"])
+                sent = True
+                print(f"emailed {len(new)} new slot(s)")
+            if not sent:
+                raise RuntimeError("no notification channel configured: set NTFY_TOPIC (or SMTP_USER/SMTP_PASSWORD)")
     else:
         print(f"no new slots ({len(current)} free in window)")
 
