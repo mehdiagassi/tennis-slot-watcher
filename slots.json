@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-26T01:18:01+01:00",
+ "checked": "2026-11-26T01:19:11+01:00",
  "paused": false,
  "errors": [],
  "clubs": {
@@ -1811,7 +1811,7 @@
    "start": "2026-12-07T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1819,7 +1819,7 @@
    "start": "2026-12-08T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1827,7 +1827,7 @@
    "start": "2026-12-08T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1835,7 +1835,7 @@
    "start": "2026-12-10T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1843,7 +1843,7 @@
    "start": "2026-12-10T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1851,7 +1851,7 @@
    "start": "2026-12-11T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1859,7 +1859,7 @@
    "start": "2026-12-13T21:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1867,7 +1867,7 @@
    "start": "2026-12-14T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1875,7 +1875,7 @@
    "start": "2026-12-15T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1883,7 +1883,7 @@
    "start": "2026-12-15T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1891,7 +1891,7 @@
    "start": "2026-12-17T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1899,7 +1899,7 @@
    "start": "2026-12-17T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1907,7 +1907,7 @@
    "start": "2026-12-18T08:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1915,7 +1915,7 @@
    "start": "2026-12-18T08:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1923,7 +1923,7 @@
    "start": "2026-12-18T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1931,7 +1931,7 @@
    "start": "2026-12-20T21:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1939,7 +1939,7 @@
    "start": "2026-12-21T08:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1947,7 +1947,7 @@
    "start": "2026-12-21T08:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1955,7 +1955,7 @@
    "start": "2026-12-21T21:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1963,7 +1963,7 @@
    "start": "2026-12-21T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1971,7 +1971,7 @@
    "start": "2026-12-22T09:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1979,7 +1979,7 @@
    "start": "2026-12-22T10:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1987,7 +1987,7 @@
    "start": "2026-12-22T21:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -1995,7 +1995,7 @@
    "start": "2026-12-22T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2003,7 +2003,7 @@
    "start": "2026-12-22T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2011,7 +2011,7 @@
    "start": "2026-12-23T08:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2019,7 +2019,7 @@
    "start": "2026-12-23T09:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2027,7 +2027,7 @@
    "start": "2026-12-23T09:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2035,7 +2035,7 @@
    "start": "2026-12-23T10:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2043,7 +2043,7 @@
    "start": "2026-12-23T11:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2051,7 +2051,7 @@
    "start": "2026-12-23T14:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2059,7 +2059,7 @@
    "start": "2026-12-23T21:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2067,7 +2067,7 @@
    "start": "2026-12-23T22:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2075,7 +2075,7 @@
    "start": "2026-12-24T08:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2083,7 +2083,7 @@
    "start": "2026-12-24T09:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2091,7 +2091,7 @@
    "start": "2026-12-24T09:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2099,7 +2099,7 @@
    "start": "2026-12-24T10:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2107,7 +2107,7 @@
    "start": "2026-12-24T11:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2115,7 +2115,7 @@
    "start": "2026-12-24T12:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2123,7 +2123,7 @@
    "start": "2026-12-24T12:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2131,7 +2131,7 @@
    "start": "2026-12-24T13:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   },
   {
    "club": "TiB 1848",
@@ -2139,7 +2139,7 @@
    "start": "2026-12-24T13:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true
+   "new": false
   }
  ]
 }
