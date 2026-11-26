@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-26T16:23:18+01:00",
+ "checked": "2026-11-26T16:34:44+01:00",
  "paused": false,
  "errors": [],
  "clubs": {
@@ -687,15 +687,6 @@
   {
    "club": "Treptower Teufel",
    "court": "Platz 11",
-   "start": "2026-11-29T08:00+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/29/2026",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
-   "court": "Platz 13",
    "start": "2026-11-29T08:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/29/2026",
