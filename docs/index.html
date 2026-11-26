@@ -21,7 +21,7 @@
 :root {
   --bg: #F3F5F7; --surface: #FFFFFF; --ink: #14202B; --muted: #5E6B78; --line: #DCE2E8;
   --accent: #1F5FA8; --accent-ink: #FFFFFF; --accent-soft: #E3EDF8;
-  --clay: #B4532A; --clay-soft: #F7E7DF; --hard: #1F5FA8; --hard-soft: #E3EDF8;
+  --clay: #B4532A; --clay-soft: #F7E7DF; --hard: #1F5FA8; --hard-soft: #E3EDF8; --carpet: #2F7A3A; --carpet-soft: #E1F1E2;
   --new: #2E8B57; --warn: #B7791F; --warn-soft: #FBF0DC; --danger: #B42318;
   --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
   --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -31,13 +31,13 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #0E141A; --surface: #17202A; --ink: #E8EEF3; --muted: #93A1AE; --line: #26323E;
   --accent: #6FA8E8; --accent-ink: #0E141A; --accent-soft: #1B2B3D;
-  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D;
+  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D; --carpet: #7BCB86; --carpet-soft: #1C3321;
   --new: #5CC48A; --warn: #E3B05C; --warn-soft: #33281A; --danger: #F07A6E;
   color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #0E141A; --surface: #17202A; --ink: #E8EEF3; --muted: #93A1AE; --line: #26323E;
   --accent: #6FA8E8; --accent-ink: #0E141A; --accent-soft: #1B2B3D;
-  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D;
+  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D; --carpet: #7BCB86; --carpet-soft: #1C3321;
   --new: #5CC48A; --warn: #E3B05C; --warn-soft: #33281A; --danger: #F07A6E;
   color-scheme: dark; }
 
@@ -103,9 +103,9 @@ main .wrap { padding-block: 16px 24px; display: flex; flex-direction: column; ga
 .courts { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .court { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; border-radius: 8px; padding: 5px 9px; font-size: 13.5px; font-weight: 600; background: var(--hard-soft); color: var(--hard); border: 1px solid transparent; }
 .court.clay { background: var(--clay-soft); color: var(--clay); }
+.court.carpet { background: var(--carpet-soft); color: var(--carpet); }
 .court .sfc { font-weight: 400; font-size: 11.5px; opacity: .85; }
-.court.isnew { border-color: var(--new); }
-.court.isnew::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--new); }
+.court.isnew::before { content: "NEW"; font-size: 9.5px; font-weight: 700; letter-spacing: .06em; line-height: 1; padding: 3px 4px 2px; border-radius: 4px; background: var(--ink); color: var(--bg); }
 .clubtag { font-size: 11.5px; color: var(--muted); width: 100%; }
 
 .empty { text-align: center; padding: 36px 16px; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); }
@@ -333,7 +333,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     const info = (c?.info || "").toLowerCase();
     if (/sand|clay|asche/.test(info)) return { cls: "clay", label: "Sand" };
     if (/hard/.test(info)) return { cls: "", label: "Hard" };
-    if (/teppich|carpet|granulat/.test(info)) return { cls: "", label: "Carpet" };
+    if (/teppich|carpet|granulat/.test(info)) return { cls: "carpet", label: "Carpet" };
     return { cls: "", label: "" };
   }
   let toastTimer;
