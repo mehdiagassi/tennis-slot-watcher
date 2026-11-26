@@ -365,7 +365,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     const surfaces = [...new Set(free.map(s => surfaceOf(s.club, s.court).label).filter(Boolean))];
     // filters
     const hasAlertTimes = ["weekdays", "weekends"].some(k => (S.config?.alert_times?.[k] || []).length);
-    const opts = [["all", "All"], ...(hasAlertTimes ? [["alert", "My alert times"]] : []), ["evening", "After 17:00"], ["weekend", "Weekend"], ...surfaces.map(s => ["sfc:" + s, s]), ...(clubs.length > 1 ? clubs.map(c => ["club:" + c, c]) : [])];
+    const opts = [["all", "All"], ...(hasAlertTimes ? [["alert", "My alert times"]] : []), ["after16", "After 16:00"], ["evening", "After 17:00"], ["weekend", "Weekend"], ...surfaces.map(s => ["sfc:" + s, s]), ...(clubs.length > 1 ? clubs.map(c => ["club:" + c, c]) : [])];
     if (!opts.some(o => o[0] === S.filter)) S.filter = "all";
     $("filterChips").replaceChildren(...opts.map(([k, label]) => el("button", {
       class: "chip", "aria-pressed": String(S.filter === k),
@@ -375,6 +375,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     const shown = free.filter(s => {
       const p = parseLocal(s.start);
       if (S.filter === "alert") return s.alert !== false;
+      if (S.filter === "after16") return p.hh >= 16 || p.hh < 2;
       if (S.filter === "evening") return p.hh >= 17 || p.hh < 2;
       if (S.filter === "weekend") { const w = sheetDay(p).dow; return w === 0 || w === 6; }
       if (S.filter.startsWith("sfc:")) return surfaceOf(s.club, s.court).label === S.filter.slice(4);
