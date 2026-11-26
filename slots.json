@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-26T06:18:06+01:00",
+ "checked": "2026-11-26T09:46:30+01:00",
  "paused": false,
  "errors": [],
  "clubs": {
@@ -48,69 +48,6 @@
   {
    "club": "Treptower Teufel",
    "court": "Platz 1",
-   "start": "2026-11-26T07:00+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/26/2026",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
-   "court": "Platz 13",
-   "start": "2026-11-26T07:00+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/26/2026",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
-   "court": "Platz 2",
-   "start": "2026-11-26T07:00+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/26/2026",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "TiB 1848",
-   "court": "Platz 2",
-   "start": "2026-11-26T08:00+01:00",
-   "minutes": 60,
-   "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
-   "court": "Platz 1",
-   "start": "2026-11-26T08:00+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/26/2026",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
-   "court": "Platz 11",
-   "start": "2026-11-26T08:00+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/26/2026",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
-   "court": "Platz 2",
-   "start": "2026-11-26T08:00+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/26/2026",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
-   "court": "Platz 1",
    "start": "2026-11-26T12:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/26/2026",
@@ -146,11 +83,29 @@
   },
   {
    "club": "Treptower Teufel",
+   "court": "Platz 1",
+   "start": "2026-11-26T18:00+01:00",
+   "minutes": 60,
+   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/26/2026",
+   "new": true,
+   "alert": true
+  },
+  {
+   "club": "Treptower Teufel",
    "court": "Platz 11",
    "start": "2026-11-26T20:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/26/2026",
    "new": false,
+   "alert": false
+  },
+  {
+   "club": "TiB 1848",
+   "court": "Platz 1",
+   "start": "2026-11-26T22:00+01:00",
+   "minutes": 60,
+   "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
+   "new": true,
    "alert": false
   },
   {
@@ -358,6 +313,15 @@
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/27/2026",
    "new": false,
+   "alert": true
+  },
+  {
+   "club": "TiB 1848",
+   "court": "Platz 1",
+   "start": "2026-11-27T19:00+01:00",
+   "minutes": 60,
+   "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
+   "new": true,
    "alert": true
   },
   {
@@ -2009,6 +1973,15 @@
   },
   {
    "club": "TiB 1848",
+   "court": "Platz 2",
+   "start": "2026-12-02T16:00+01:00",
+   "minutes": 60,
+   "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
+   "new": true,
+   "alert": true
+  },
+  {
+   "club": "TiB 1848",
    "court": "Platz 1",
    "start": "2026-12-02T22:00+01:00",
    "minutes": 60,
@@ -2253,15 +2226,6 @@
   {
    "club": "TiB 1848",
    "court": "Platz 1",
-   "start": "2026-12-23T09:00+01:00",
-   "minutes": 60,
-   "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "TiB 1848",
-   "court": "Platz 2",
    "start": "2026-12-23T09:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
