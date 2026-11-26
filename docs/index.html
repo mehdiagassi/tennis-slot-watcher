@@ -90,6 +90,17 @@ main .wrap { padding-block: 16px 24px; display: flex; flex-direction: column; ga
 .chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; font-size: 13.5px; font-weight: 500; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
+/* week navigation */
+.weeks { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; margin: -4px -16px 0; padding: 0 16px; border-bottom: 1px solid var(--line); }
+.weeks::-webkit-scrollbar { display: none; }
+.week { flex: none; position: relative; background: none; border: 0; border-bottom: 2.5px solid transparent; padding: 6px 12px 8px 2px; margin-right: 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; color: var(--muted); }
+.week b { font-family: var(--display); font-size: 16.5px; font-weight: 600; letter-spacing: .01em; line-height: 1.1; }
+.week small { font-size: 12px; font-variant-numeric: tabular-nums; }
+.week[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.week[aria-selected="true"] small { color: var(--muted); }
+.week .wdot { position: absolute; top: 7px; right: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--dot); }
+.week.empty-week b { opacity: .55; }
+
 .notice { border-radius: var(--r); padding: 12px 14px; background: var(--warn-soft); color: var(--ink); font-size: 14px; border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); }
 .notice b { color: var(--warn); }
 
@@ -211,6 +222,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
   <!-- SLOTS -->
   <section id="slotsView" hidden>
     <div class="wrap">
+      <div class="weeks" id="weekTabs" role="tablist" aria-label="Week"></div>
       <div class="summary"><span class="big" id="freeCount">–</span><span class="lbl" id="freeLbl">free slots</span></div>
       <div class="chips" id="filterChips" role="toolbar" aria-label="Filter"></div>
       <div id="notices"></div>
@@ -255,6 +267,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     draft: null,           // edited copy
     filter: store.get("cw.filter") || "all",
     tab: "slots",
+    week: null,
   };
 
   // ---------- GitHub API ----------
@@ -316,6 +329,13 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     const d = new Date(Date.UTC(p.y, p.m - 1, p.d - 1));
     return { dk: d.toISOString().slice(0, 10), dow: d.getUTCDay() };
   };
+  // Monday (YYYY-MM-DD) of the week a date belongs to, and a short range label like "7–13 Dec"
+  const weekOf = (dk) => { const [y, m, d] = dk.split("-").map(Number); const t = new Date(Date.UTC(y, m - 1, d)); t.setUTCDate(d - (t.getUTCDay() + 6) % 7); return t.toISOString().slice(0, 10); };
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  function weekRange(w) {
+    const a = new Date(w + "T00:00:00Z"), b = new Date(a.getTime() + 6 * 864e5);
+    return a.getUTCMonth() === b.getUTCMonth() ? `${a.getUTCDate()}–${b.getUTCDate()} ${MONTHS[b.getUTCMonth()]}` : `${a.getUTCDate()} ${MONTHS[a.getUTCMonth()]}–${b.getUTCDate()} ${MONTHS[b.getUTCMonth()]}`;
+  }
   const parseLocal = (iso) => {
     const [d, t] = iso.split("T"); const [y, m, dd] = d.split("-").map(Number); const [hh, mm] = t.slice(0, 5).split(":").map(Number);
     return { y, m, d: dd, hh, mm, dateKey: d, dow: new Date(Date.UTC(y, m - 1, dd)).getUTCDay() };
@@ -393,9 +413,29 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
       if (S.filter.startsWith("club:")) return s.club === S.filter.slice(5);
       return true;
     });
-    $("freeCount").textContent = shown.length;
-    const days = new Set(shown.map(s => sheetDay(parseLocal(s.start)).dk)).size;
-    $("freeLbl").textContent = `free slot${shown.length === 1 ? "" : "s"}${days ? ` over ${days} day${days === 1 ? "" : "s"}` : ""}`;
+    // weeks (Mon–Sun, Berlin), from this week to the last week with data
+    const todayKey = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Berlin" });
+    const thisWeek = weekOf(todayKey);
+    const wk = (s) => weekOf(sheetDay(parseLocal(s.start)).dk);
+    const weeks = [...new Set([thisWeek, ...free.map(wk)])].filter(w => w >= thisWeek).sort();
+    if (!weeks.includes(S.week)) S.week = thisWeek;
+    const stats = new Map(weeks.map(w => [w, { n: 0, fresh: 0 }]));
+    for (const s of shown) { const st = stats.get(wk(s)); if (st) { st.n++; if (s.new) st.fresh++; } }
+    const weekName = (w) => { const i = Math.round((Date.parse(w) - Date.parse(thisWeek)) / 6048e5); return i === 0 ? "This week" : i === 1 ? "Next week" : weekRange(w); };
+    $("weekTabs").replaceChildren(...weeks.map(w => {
+      const st = stats.get(w);
+      return el("button", {
+        class: "week" + (st.n ? "" : " empty-week"), role: "tab", "aria-selected": String(S.week === w),
+        "aria-label": `${weekName(w)}, ${st.n} free${st.fresh ? `, ${st.fresh} new` : ""}`,
+        onclick: () => { S.week = w; renderSlots(); },
+        title: weekRange(w),
+      }, el("b", {}, weekName(w)), el("small", {}, `${st.n} free`), st.fresh ? el("span", { class: "wdot" }) : null);
+    }));
+    requestAnimationFrame(() => document.querySelector('.week[aria-selected="true"]')?.scrollIntoView({ block: "nearest", inline: "nearest" }));
+    const inWeek = shown.filter(s => wk(s) === S.week);
+    const wn = weekName(S.week);
+    $("freeCount").textContent = inWeek.length;
+    $("freeLbl").textContent = `free slot${inWeek.length === 1 ? "" : "s"} ${wn.includes("week") ? wn.toLowerCase() : "in " + wn}`;
 
     const notes = [];
     if (S.config?.paused) notes.push(el("div", { class: "notice" }, el("b", {}, "Alerts paused. "), "Checks still run, but you won't get notifications. Turn them back on in Settings."));
@@ -406,13 +446,17 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
       $("days").replaceChildren(el("div", { class: "empty" }, el("h3", {}, "No results yet"), "Tap Check now. The first check takes about a minute, then pull results with the reload button."));
       return;
     }
-    if (!shown.length) {
-      $("days").replaceChildren(el("div", { class: "empty" }, el("h3", {}, "Nothing free"), free.length ? "No free slots match this filter." : "Every court is booked in your time window. You'll get a notification when one opens up."));
+    if (!inWeek.length) {
+      const other = weeks.find(w => w !== S.week && stats.get(w).n);
+      $("days").replaceChildren(el("div", { class: "empty" }, el("h3", {}, "Nothing free"),
+        !free.length ? "Every court is booked in your time window. You'll get a notification when one opens up."
+        : other ? `No free slots ${wn.includes("week") ? wn.toLowerCase() : "in " + wn}${S.filter !== "all" ? " for this filter" : ""}. ${weekName(other)} has ${stats.get(other).n}.`
+        : "No free slots match this filter."));
       return;
     }
     // group: day -> time -> slots
     const byDay = new Map();
-    for (const s of shown) {
+    for (const s of inWeek) {
       const p = parseLocal(s.start);
       const { dk, dow } = sheetDay(p);
       if (!byDay.has(dk)) byDay.set(dk, { dow, times: new Map() });
@@ -421,7 +465,6 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
       if (!day.times.has(tk)) day.times.set(tk, { p, list: [] });
       day.times.get(tk).list.push(s);
     }
-    const todayKey = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Berlin" });
     const tomorrowKey = new Date(Date.now() + 864e5).toLocaleDateString("sv-SE", { timeZone: "Europe/Berlin" });
     const out = [];
     for (const [dk, day] of [...byDay.entries()].sort()) {
