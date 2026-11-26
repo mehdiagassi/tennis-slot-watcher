@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-26T10:40:32+01:00",
+ "checked": "2026-11-26T11:05:38+01:00",
  "paused": false,
  "errors": [],
  "clubs": {
@@ -312,7 +312,7 @@
    "start": "2026-11-27T15:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -344,15 +344,6 @@
   },
   {
    "club": "Treptower Teufel",
-   "court": "Platz 13",
-   "start": "2026-11-27T21:00+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/27/2026",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
    "court": "Platz 1",
    "start": "2026-11-27T21:30+01:00",
    "minutes": 60,
@@ -380,15 +371,6 @@
   },
   {
    "club": "Treptower Teufel",
-   "court": "Platz 13",
-   "start": "2026-11-27T22:00+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/27/2026",
-   "new": false,
-   "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
    "court": "Platz 2",
    "start": "2026-11-27T22:00+01:00",
    "minutes": 60,
@@ -417,10 +399,10 @@
   {
    "club": "Treptower Teufel",
    "court": "Platz 13",
-   "start": "2026-11-27T23:00+01:00",
+   "start": "2026-11-27T22:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/27/2026",
-   "new": false,
+   "new": true,
    "alert": false
   },
   {
@@ -453,10 +435,10 @@
   {
    "club": "Treptower Teufel",
    "court": "Platz 13",
-   "start": "2026-11-28T00:00+01:00",
+   "start": "2026-11-27T23:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/27/2026",
-   "new": false,
+   "new": true,
    "alert": false
   },
   {
@@ -557,15 +539,6 @@
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/28/2026",
    "new": false,
    "alert": false
-  },
-  {
-   "club": "Treptower Teufel",
-   "court": "Platz 11",
-   "start": "2026-11-28T17:30+01:00",
-   "minutes": 60,
-   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/28/2026",
-   "new": false,
-   "alert": true
   },
   {
    "club": "Treptower Teufel",
