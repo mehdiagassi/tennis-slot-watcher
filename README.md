@@ -20,7 +20,7 @@ A home-screen web app to see free slots and change all settings.
 Optional email instead/as well: secrets `SMTP_USER` (Gmail), `SMTP_PASSWORD` (Gmail app password), `EMAIL_TO`.
 
 ## Files
-- `config.json` – settings (the app edits this): days ahead, courts, time ranges per club, pause.
+- `config.json` – settings (the app edits this): alert times, pause, and per club: days ahead, courts.
 - `slots.json` – free slots from the last check (the app shows this).
 - `state.json` – slots already notified, so only new ones alert.
 

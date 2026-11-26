@@ -143,16 +143,16 @@ def in_windows(minute_of_day, windows):
 
 
 def apply_filters(club, slots):
-    out, courts = [], set(club.get("courts") or [])
-    for s in slots:
-        if courts and s["court"] not in courts:
-            continue
-        mod = s["start"].hour * 60 + s["start"].minute
-        windows = club.get("weekend_times" if s["start"].weekday() >= 5 else "weekday_times") or []
-        if windows and not in_windows(mod, windows):
-            continue
-        out.append(s)
-    return out
+    """Keep only the courts chosen for this club (empty list = all courts)."""
+    courts = set(club.get("courts") or [])
+    return [s for s in slots if not courts or s["court"] in courts]
+
+
+def wants_alert(cfg, s):
+    """Does this slot's start time fall in the alert times? No ranges = any time."""
+    times = cfg.get("alert_times") or {}
+    windows = times.get("weekends" if s["start"].weekday() >= 5 else "weekdays") or []
+    return not windows or in_windows(s["start"].hour * 60 + s["start"].minute, windows)
 
 
 def key(s):
@@ -253,10 +253,11 @@ def main():
     cur_keys = {key(s) for s in current}
     new = [s for s in current if seen is None or key(s) not in seen]
     new_keys = {key(s) for s in new}
+    alerts = [s for s in new if wants_alert(cfg, s)]
     paused = cfg.get("paused", False)
 
     if args.dry_run:
-        print(f"{len(new)} new, {len(current)} free in window\n" + group_text(new))
+        print(f"{len(new)} new ({len(alerts)} in alert times), {len(current)} free in window\n" + group_text(alerts))
         return
 
     # Write what the app shows first, so it is up to date even if notifying fails
@@ -266,15 +267,18 @@ def main():
         "errors": errors,
         "clubs": club_info,
         "free": [{"club": s["club"], "court": s["court"], "start": s["start"].isoformat(timespec="minutes"),
-                  "minutes": s["minutes"], "url": s["url"], "new": key(s) in new_keys}
+                  "minutes": s["minutes"], "url": s["url"], "new": key(s) in new_keys,
+                  "alert": wants_alert(cfg, s)}
                  for s in sorted(current, key=lambda s: (s["start"], s["club"], s["court"]))],
     }, ensure_ascii=False, indent=1) + "\n")
 
 
-    if new and not paused:
-        notify(cfg, new, current, errors)
+    if alerts and not paused:
+        notify(cfg, alerts, current, errors)
+    elif paused:
+        print("paused, no notifications")
     else:
-        print("paused, no notifications" if paused else f"no new slots ({len(current)} free in window)")
+        print(f"{len(new)} new slot(s), none in your alert times ({len(current)} free in window)")
 
     # Remember what was free, keeping old entries for clubs that failed this time
     failed = {e.split(":")[0] for e in errors}

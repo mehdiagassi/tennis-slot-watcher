@@ -1,5 +1,9 @@
 {
  "paused": false,
+ "alert_times": {
+  "weekdays": [],
+  "weekends": []
+ },
  "clubs": [
   {
    "name": "Treptower Teufel",
@@ -12,9 +16,7 @@
    "open_from": "06:00",
    "open_until": "01:00",
    "slot_minutes": 60,
-   "courts": [],
-   "weekday_times": [],
-   "weekend_times": []
+   "courts": []
   },
   {
    "name": "TiB 1848",
@@ -24,9 +26,7 @@
    "sport": "tennis",
    "days_ahead": 28,
    "max_days_ahead": 30,
-   "courts": [],
-   "weekday_times": [],
-   "weekend_times": []
+   "courts": []
   }
  ],
  "email": {

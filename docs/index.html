@@ -364,7 +364,8 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     const clubs = [...new Set(free.map(s => s.club))];
     const surfaces = [...new Set(free.map(s => surfaceOf(s.club, s.court).label).filter(Boolean))];
     // filters
-    const opts = [["all", "All"], ["evening", "After 17:00"], ["weekend", "Weekend"], ...surfaces.map(s => ["sfc:" + s, s]), ...(clubs.length > 1 ? clubs.map(c => ["club:" + c, c]) : [])];
+    const hasAlertTimes = ["weekdays", "weekends"].some(k => (S.config?.alert_times?.[k] || []).length);
+    const opts = [["all", "All"], ...(hasAlertTimes ? [["alert", "My alert times"]] : []), ["evening", "After 17:00"], ["weekend", "Weekend"], ...surfaces.map(s => ["sfc:" + s, s]), ...(clubs.length > 1 ? clubs.map(c => ["club:" + c, c]) : [])];
     if (!opts.some(o => o[0] === S.filter)) S.filter = "all";
     $("filterChips").replaceChildren(...opts.map(([k, label]) => el("button", {
       class: "chip", "aria-pressed": String(S.filter === k),
@@ -373,6 +374,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
 
     const shown = free.filter(s => {
       const p = parseLocal(s.start);
+      if (S.filter === "alert") return s.alert !== false;
       if (S.filter === "evening") return p.hh >= 17 || p.hh < 2;
       if (S.filter === "weekend") { const w = sheetDay(p).dow; return w === 0 || w === 6; }
       if (S.filter.startsWith("sfc:")) return surfaceOf(s.club, s.court).label === S.filter.slice(4);
@@ -459,7 +461,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     return el("div", { class: "field" },
       el("div", { class: "lab" }, el("span", {}, title, el("div", { class: "hint" }, list.length ? hint : "Any time"))),
       wrap,
-      el("button", { class: "link", onclick: () => { list.push(key === "weekend_times" ? "09:00-18:00" : "18:00-22:00"); afterEdit(); } }, "+ Add time range"));
+      el("button", { class: "link", onclick: () => { list.push(key.startsWith("weekend") ? "09:00-14:00" : "18:00-22:00"); afterEdit(); } }, "+ Add time range"));
   }
 
   function renderSettings() {
@@ -470,7 +472,10 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
 
     parts.push(el("div", { class: "card" },
       el("header", {}, el("h3", {}, "Notifications")),
-      toggleField("pausedT", "Send alerts", "Push a notification when a slot opens up", !c.paused, (v) => { c.paused = !v; afterEdit(); })));
+      toggleField("pausedT", "Send alerts", "Push a notification when a slot opens up", !c.paused, (v) => { c.paused = !v; afterEdit(); }),
+      el("div", { class: "field" }, el("div", { class: "hint" }, "Only alert me when the free slot starts in these times. The Free slots tab still shows every free slot.")),
+      rangeEditor(c.alert_times || (c.alert_times = { weekdays: [], weekends: [] }), "weekdays", "alert", "Weekdays", "Mon–Fri"),
+      rangeEditor(c.alert_times, "weekends", "alert", "Weekends", "Sat–Sun")));
 
     c.clubs.forEach((club, idx) => {
       const info = S.slots?.clubs?.[club.name];
@@ -499,8 +504,6 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
               el("output", {}, club.days_ahead ?? 5),
               el("button", { "aria-label": "More days", onclick: () => { if ((club.days_ahead ?? 5) >= max) { toast(`This club only allows ${max} days ahead`); return; } club.days_ahead = (club.days_ahead ?? 5) + 1; afterEdit(); } }, "+")))),
         el("div", { class: "field" }, el("div", { class: "lab" }, el("span", {}, "Courts", el("div", { class: "hint" }, allOn ? "All courts" : `${sel.size} of ${courts.length || sel.size}`))), courtChips),
-        rangeEditor(club, "weekday_times", idx, "Weekdays", "Mon–Fri, slot must start in a range"),
-        rangeEditor(club, "weekend_times", idx, "Weekends", "Sat–Sun, slot must start in a range"),
         c.clubs.length > 1 ? el("div", { class: "field" }, el("button", { class: "link danger", onclick: (e) => {
           if (e.currentTarget.dataset.armed) { c.clubs.splice(idx, 1); afterEdit(); return; }
           e.currentTarget.dataset.armed = "1"; e.currentTarget.textContent = `Tap again to remove ${club.name}`;
@@ -529,7 +532,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
           if (!name) { addErr.textContent = "Give the club a name."; addErr.hidden = false; return; }
           if (c.clubs.some(x => x.name === name)) { addErr.textContent = "You already have a club with that name."; addErr.hidden = false; return; }
           const max = parseInt($("newMax").value, 10);
-          const common = { name, enabled: true, days_ahead: max > 0 ? Math.min(max, 7) : 7, ...(max > 0 ? { max_days_ahead: max } : {}), courts: [], weekday_times: [], weekend_times: [] };
+          const common = { name, enabled: true, days_ahead: max > 0 ? Math.min(max, 7) : 7, ...(max > 0 ? { max_days_ahead: max } : {}), courts: [] };
           c.clubs.push(eb
             ? { ...common, type: "ebusy", base_url: "https://" + eb[1].toLowerCase(), module: +eb[2], open_from: "06:00", open_until: "23:00", slot_minutes: 60 }
             : { ...common, type: "gotcourts", club_id: gc[1].toLowerCase(), sport: "tennis" });
@@ -557,7 +560,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     const btn = $("saveBtn"); btn.disabled = true; btn.textContent = "Saving…";
     try {
       // validate ranges
-      for (const cl of S.draft.clubs) for (const k of ["weekday_times", "weekend_times"]) (cl[k] || []).forEach(r => { if (!/^\d\d:\d\d-\d\d:\d\d$/.test(r)) throw new Error(`Check the times for ${cl.name}`); });
+      for (const k of ["weekdays", "weekends"]) (S.draft.alert_times?.[k] || []).forEach(r => { if (!/^\d\d:\d\d-\d\d:\d\d$/.test(r)) throw new Error("Check the alert times"); });
       const body = JSON.stringify(S.draft, null, 1) + "\n";
       const res = await gh("/contents/config.json", { method: "PUT", body: JSON.stringify({ message: "Update settings from the app", content: b64encode(body), sha: S.configSha }) });
       S.configSha = res.content.sha; S.config = clone(S.draft);
