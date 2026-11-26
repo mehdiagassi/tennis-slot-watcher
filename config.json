@@ -1,8 +1,12 @@
 {
  "paused": false,
  "alert_times": {
-  "weekdays": [],
-  "weekends": []
+  "weekdays": [
+   "16:00-20:00"
+  ],
+  "weekends": [
+   "12:00-20:00"
+  ]
  },
  "clubs": [
   {
