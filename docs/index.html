@@ -66,10 +66,11 @@ header.top .wrap { display: flex; align-items: center; gap: 12px; padding-block:
 .iconbtn svg { width: 17px; height: 17px; }
 .iconbtn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .iconbtn:disabled { opacity: .55; }
-.spin svg { animation: spin 1s linear infinite; }
-.ic { display: inline-flex; }
+.spin svg, .spin .ic { animation: spin .9s linear infinite; }
+#checkBtn.spin .ic svg { animation: none; }
+.ic { display: inline-flex; width: 17px; height: 17px; transform-origin: 50% 50%; will-change: transform; }
 #checkBtn:disabled { opacity: .85; }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 /* tab bar */
 nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -153,7 +154,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
 .err { color: var(--danger); font-size: 13.5px; }
 
 .toast { position: fixed; left: 50%; transform: translateX(-50%); top: calc(76px + env(safe-area-inset-top, 0px)); z-index: 40; background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 6px 24px rgba(0,0,0,.2); }
-@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { *:not(.ic):not(.ic *) { animation: none !important; transition: none !important; } .spin .ic { animation-duration: 1.6s; } }
 </style>
 </head>
 <body>
