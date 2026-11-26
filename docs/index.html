@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
 <style>
-/* Layout: one column, sticky header, iOS-style tab bar; slots read like a court sheet: time on the left, court chips on the right. */
+/* Layout: one column, sticky header with actions (settings opens as its own page); slots read like a court sheet: time on the left, court chips on the right. */
 :root {
   --bg: #F3F5F7; --surface: #FFFFFF; --ink: #14202B; --muted: #5E6B78; --line: #DCE2E8;
   --accent: #1F5FA8; --accent-ink: #FFFFFF; --accent-soft: #E3EDF8;
@@ -46,7 +46,7 @@ html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--ink); font: 15px/1.45 var(--body);
   -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
-  padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
 }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 30; }
 button, input, select { font: inherit; color: inherit; }
@@ -72,12 +72,12 @@ header.top .wrap { display: flex; align-items: center; gap: 12px; padding-block:
 #checkBtn:disabled { opacity: .85; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-/* tab bar */
-nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
-nav.tabs .wrap { display: grid; grid-template-columns: 1fr 1fr; }
-nav.tabs button { background: none; border: 0; padding: 9px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11.5px; font-weight: 600; color: var(--muted); }
-nav.tabs button svg { width: 24px; height: 24px; }
-nav.tabs button[aria-selected="true"] { color: var(--accent); }
+.iconbtn.round { width: 38px; padding: 0; justify-content: center; flex: none; }
+.iconbtn.round svg { width: 19px; height: 19px; }
+header.top .wrap { gap: 8px; }
+.brand { overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 370px) { .brand { font-size: 21px; } #checkLabel { display: none; } #checkBtn { width: 38px; padding: 0; justify-content: center; } }
+#settingsView .wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
 main .wrap { padding-block: 16px 24px; display: flex; flex-direction: column; gap: 16px; }
 
@@ -143,7 +143,7 @@ main .wrap { padding-block: 16px 24px; display: flex; flex-direction: column; ga
 .textin { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 12px; min-width: 0; }
 .btn { border: 0; border-radius: 12px; padding: 12px 16px; font-weight: 600; background: var(--accent); color: var(--accent-ink); }
 .btn.ghost { background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
-.savebar { position: fixed; left: 0; right: 0; bottom: calc(60px + env(safe-area-inset-bottom, 0px)); z-index: 19; }
+.savebar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 19; padding-bottom: env(safe-area-inset-bottom, 0px); background: linear-gradient(to top, var(--bg) 60%, transparent); }
 .savebar .wrap { padding-block: 10px; display: flex; gap: 10px; }
 .savebar .btn { flex: 1; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
 
@@ -163,13 +163,19 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
 
 <header class="top">
   <div class="wrap">
-    <div class="brand">Court Watch<div class="status" id="status">Loading…</div></div>
-    <button class="iconbtn" id="refreshBtn" aria-label="Reload">
+    <button class="iconbtn round" id="backBtn" aria-label="Back to free slots" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg>
+    </button>
+    <div class="brand"><span id="brandTitle">Court Watch</span><div class="status" id="status">Loading…</div></div>
+    <button class="iconbtn round" id="refreshBtn" aria-label="Reload">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
     </button>
     <button class="iconbtn primary" id="checkBtn">
       <span id="checkIcon" class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
       <span id="checkLabel">Check</span>
+    </button>
+    <button class="iconbtn round" id="settingsBtn" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
     </button>
   </div>
 </header>
@@ -225,18 +231,6 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
   </div>
 </div>
 
-<nav class="tabs" id="tabs" hidden>
-  <div class="wrap" role="tablist">
-    <button role="tab" id="tabSlots" aria-selected="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="m9 15 2 2 4-4"/></svg>
-      Free slots
-    </button>
-    <button role="tab" id="tabSettings" aria-selected="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
-      Settings
-    </button>
-  </div>
-</nav>
 
 <div class="toast" id="toast" role="status" hidden></div>
 
@@ -260,7 +254,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     configSha: null,
     draft: null,           // edited copy
     filter: store.get("cw.filter") || "all",
-    tab: store.get("cw.tab") || "slots",
+    tab: "slots",
   };
 
   // ---------- GitHub API ----------
@@ -362,14 +356,13 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
   function render() {
     const connected = !!(S.repo && S.token);
     $("connectView").hidden = connected;
-    $("tabs").hidden = !connected;
-    $("checkBtn").hidden = !connected;
-    $("refreshBtn").hidden = !connected;
+    const inSettings = connected && S.tab === "settings";
+    $("checkBtn").hidden = $("refreshBtn").hidden = $("settingsBtn").hidden = !connected || inSettings;
+    $("backBtn").hidden = !inSettings;
+    $("brandTitle").textContent = inSettings ? "Settings" : "Court Watch";
     if (!connected) { $("slotsView").hidden = $("settingsView").hidden = true; $("savebar").hidden = true; setStatus("Not connected"); return; }
-    $("slotsView").hidden = S.tab !== "slots";
-    $("settingsView").hidden = S.tab !== "settings";
-    $("tabSlots").setAttribute("aria-selected", S.tab === "slots");
-    $("tabSettings").setAttribute("aria-selected", S.tab === "settings");
+    $("slotsView").hidden = inSettings;
+    $("settingsView").hidden = !inSettings;
     $("savebar").hidden = !(S.tab === "settings" && isDirty());
     if (S.slots?.checked) setStatus(`Checked ${ago(S.slots.checked)}${S.config?.paused ? " · alerts paused" : ""}`);
     else setStatus("No check has run yet");
@@ -492,7 +485,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     parts.push(el("div", { class: "card" },
       el("header", {}, el("h3", {}, "Notifications")),
       toggleField("pausedT", "Send alerts", "Push a notification when a slot opens up", !c.paused, (v) => { c.paused = !v; afterEdit(); }),
-      el("div", { class: "field" }, el("div", { class: "hint" }, "Only alert me when the free slot starts in these times. The Free slots tab still shows every free slot.")),
+      el("div", { class: "field" }, el("div", { class: "hint" }, "Only alert me when the free slot starts in these times. The slot list still shows every free slot.")),
       rangeEditor(c.alert_times || (c.alert_times = { weekdays: [], weekends: [] }), "weekdays", "alert", "Weekdays", "Mon–Fri"),
       rangeEditor(c.alert_times, "weekends", "alert", "Weekends", "Sat–Sun")));
 
@@ -682,8 +675,10 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
   $("checkBtn").addEventListener("click", checkNow);
   $("saveBtn").addEventListener("click", save);
   $("discardBtn").addEventListener("click", () => { S.draft = clone(S.config); render(); });
-  $("tabSlots").addEventListener("click", () => { S.tab = "slots"; store.set("cw.tab", "slots"); render(); window.scrollTo(0, 0); });
-  $("tabSettings").addEventListener("click", () => { S.tab = "settings"; store.set("cw.tab", "settings"); render(); window.scrollTo(0, 0); });
+  function showView(tab) { S.tab = tab; render(); window.scrollTo(0, 0); }
+  $("settingsBtn").addEventListener("click", () => { try { history.pushState({ v: "settings" }, ""); } catch {} showView("settings"); });
+  $("backBtn").addEventListener("click", () => { if (history.state?.v === "settings") history.back(); else showView("slots"); });
+  window.addEventListener("popstate", () => showView(history.state?.v === "settings" ? "settings" : "slots"));
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.token && !isDirty()) refresh(); });
   if (S.repo) $("repoIn").value = S.repo;
 
