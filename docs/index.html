@@ -489,7 +489,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
       })) : el("div", { class: "hint" }, "Courts appear here after the first check.");
 
       parts.push(el("div", { class: "card" },
-        el("header", {}, el("div", {}, el("h3", {}, club.name), el("div", { class: "sub" }, club.base_url.replace(/^https:\/\//, ""))),
+        el("header", {}, el("div", {}, el("h3", {}, club.name), el("div", { class: "sub" }, club.type === "gotcourts" ? "GotCourts" : (club.base_url || "").replace(/^https:\/\//, ""))),
           el("span", { class: "toggle" }, el("input", { type: "checkbox", id: `en-${idx}`, role: "switch", "aria-label": `Watch ${club.name}`, checked: club.enabled !== false, onchange: (e) => { club.enabled = e.target.checked; afterEdit(); } }), el("span"))),
         el("div", { class: "field" },
           el("div", { class: "lab" },
@@ -510,26 +510,29 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     // add club
     const addErr = el("div", { class: "err", hidden: true });
     parts.push(el("div", { class: "card" },
-      el("header", {}, el("div", {}, el("h3", {}, "Add a club"), el("div", { class: "sub" }, "Clubs that book through eBuSy (…ebusy.de)"))),
+      el("header", {}, el("div", {}, el("h3", {}, "Add a club"), el("div", { class: "sub" }, "Clubs that book through eBuSy or GotCourts"))),
       el("div", { class: "field" },
         el("label", { class: "lab", for: "newUrl" }, "Booking page link"),
-        el("input", { class: "textin", id: "newUrl", inputmode: "url", autocapitalize: "off", placeholder: "https://yourclub.ebusy.de/lite-module/1" }),
+        el("input", { class: "textin", id: "newUrl", inputmode: "url", autocapitalize: "off", placeholder: "eBuSy or GotCourts booking link" }),
         el("label", { class: "lab", for: "newName" }, "Name"),
         el("input", { class: "textin", id: "newName", placeholder: "e.g. TC Blau-Weiss" }),
         el("label", { class: "lab", for: "newMax" }, "Max days you can book ahead", el("span", { class: "hint" }, "optional")),
         el("input", { class: "textin", id: "newMax", inputmode: "numeric", placeholder: "e.g. 7" }),
         addErr,
         el("button", { class: "btn ghost", onclick: () => {
-          const m = $("newUrl").value.trim().match(/^https:\/\/([a-z0-9-]+\.ebusy\.de)\/lite-module\/(\d+)/i);
+          const url = $("newUrl").value.trim();
+          const eb = url.match(/^https:\/\/([a-z0-9-]+\.ebusy\.de)\/lite-module\/(\d+)/i);
+          const gc = url.match(/gotcourts\.com\/.*?(clb_[0-9a-f]{32})/i);
           const name = $("newName").value.trim();
           addErr.hidden = true;
-          if (!m) { addErr.textContent = "Paste the club's eBuSy booking link, like https://club.ebusy.de/lite-module/1. Other booking systems need a code change."; addErr.hidden = false; return; }
+          if (!eb && !gc) { addErr.textContent = "Paste the club's eBuSy or GotCourts link, like https://club.ebusy.de/lite-module/1 or https://apps.gotcourts.com/…/club/clb_…. Other booking systems need a code change."; addErr.hidden = false; return; }
           if (!name) { addErr.textContent = "Give the club a name."; addErr.hidden = false; return; }
           if (c.clubs.some(x => x.name === name)) { addErr.textContent = "You already have a club with that name."; addErr.hidden = false; return; }
           const max = parseInt($("newMax").value, 10);
-          c.clubs.push({ name, type: "ebusy", enabled: true, base_url: "https://" + m[1].toLowerCase(), module: +m[2],
-            days_ahead: max > 0 ? Math.min(max, 7) : 7, ...(max > 0 ? { max_days_ahead: max } : {}),
-            open_from: "06:00", open_until: "23:00", slot_minutes: 60, courts: [], weekday_times: [], weekend_times: [] });
+          const common = { name, enabled: true, days_ahead: max > 0 ? Math.min(max, 7) : 7, ...(max > 0 ? { max_days_ahead: max } : {}), courts: [], weekday_times: [], weekend_times: [] };
+          c.clubs.push(eb
+            ? { ...common, type: "ebusy", base_url: "https://" + eb[1].toLowerCase(), module: +eb[2], open_from: "06:00", open_until: "23:00", slot_minutes: 60 }
+            : { ...common, type: "gotcourts", club_id: gc[1].toLowerCase(), sport: "tennis" });
           afterEdit(); toast(`${name} added. Save to start watching it.`);
         } }, "Add club"))));
 

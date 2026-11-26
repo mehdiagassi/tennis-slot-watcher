@@ -88,7 +88,49 @@ def ebusy_free_slots(club, now):
     return slots, [{"name": c["name"], "info": c["info"]} for c in courts.values()]
 
 
-ADAPTERS = {"ebusy": ebusy_free_slots}
+# ---------- GotCourts ----------
+GOTCOURTS_API = "https://app-api.gotcourts.com/v1/prod"
+
+
+def gotcourts_booking_url(club, day=None):
+    return f"https://apps.gotcourts.com/newplayer/club/{club['club_id']}"
+
+
+def gotcourts_free_slots(club, now):
+    sport = club.get("sport", "tennis")
+    today = now.date()
+    days = [today + timedelta(days=i) for i in range(int(club.get("days_ahead", 7)) + 1)]
+    courts, slots = {}, []
+    for d in days:
+        day_ts = int(datetime.combine(d, datetime.min.time(), TZ).timestamp())
+        q = urllib.parse.urlencode({"day": day_ts, "flows": "ncc,syc,cll"})
+        data = http_get(f"{GOTCOURTS_API}/slots/club/{club['club_id']}?{q}", json_mode=True)
+        if "data" not in data or "courts" not in data["data"]:
+            raise RuntimeError(f"unexpected answer from GotCourts ({data.get('responseCode')})")
+        for c in data["data"]["courts"]:
+            if c.get("sport") != sport:
+                continue
+            name = re.sub(r"^(Tennis\s+)?(Indoor\s+|Outdoor\s+)?", "", c["name"]).strip() or c["name"]
+            surface = (c.get("surfaceType") or "").replace("_", " ").title()
+            kind = (c.get("courtType") or "").title()
+            courts[c["courtId"]] = {"name": name, "info": f"{kind} ({surface})" if surface else kind}
+            for sl in c.get("slots", []):
+                if sl.get("slotType") != "available":
+                    continue
+                begin = datetime.fromtimestamp(sl["startDateTime"], TZ)
+                end = datetime.fromtimestamp(sl["endDateTime"], TZ)
+                if begin <= now:
+                    continue
+                slots.append({"club": club["name"], "court": name, "start": begin,
+                              "minutes": int((end - begin).total_seconds() // 60),
+                              "url": gotcourts_booking_url(club, d)})
+    if not courts:
+        raise RuntimeError(f"no {sport} courts found for this club")
+    return slots, list(courts.values())
+
+
+ADAPTERS = {"ebusy": ebusy_free_slots, "gotcourts": gotcourts_free_slots}
+BOOKING_URLS = {"ebusy": ebusy_booking_url, "gotcourts": gotcourts_booking_url}
 
 
 # ---------- filtering / formatting ----------
@@ -201,7 +243,7 @@ def main():
         try:
             slots, courts = ADAPTERS[club["type"]](club, now)
             current += apply_filters(club, slots)
-            club_info[club["name"]] = {"courts": courts, "booking_url": ebusy_booking_url(club),
+            club_info[club["name"]] = {"courts": courts, "booking_url": BOOKING_URLS[club["type"]](club),
                                        "days_ahead": club.get("days_ahead")}
         except Exception as e:  # keep going with the other clubs
             errors.append(f"{club['name']}: {e}")
