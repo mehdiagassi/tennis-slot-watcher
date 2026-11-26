@@ -153,7 +153,9 @@ main .wrap { padding-block: 16px 24px; display: flex; flex-direction: column; ga
 code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius: 5px; border: 1px solid var(--line); word-break: break-all; }
 .err { color: var(--danger); font-size: 13.5px; }
 
-.toast { position: fixed; left: 50%; transform: translateX(-50%); top: calc(76px + env(safe-area-inset-top, 0px)); z-index: 40; background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 6px 24px rgba(0,0,0,.2); }
+.toast-title { font-weight: 600; }
+.toast-line { font-size: 13px; opacity: .8; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.toast { cursor: pointer; width: max-content; min-width: 220px; position: fixed; left: 50%; transform: translateX(-50%); top: calc(76px + env(safe-area-inset-top, 0px)); z-index: 40; background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 6px 24px rgba(0,0,0,.2); }
 @media (prefers-reduced-motion: reduce) { *:not(.ic):not(.ic *) { animation: none !important; transition: none !important; } .spin .ic { animation-duration: 1.6s; } }
 </style>
 </head>
@@ -340,7 +342,39 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
     return { cls: "", label: "" };
   }
   let toastTimer;
-  function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 3200); }
+  function toast(msg, lines = [], ms = 3200) {
+    const t = $("toast");
+    t.replaceChildren(el("div", { class: "toast-title" }, msg), ...lines.map(l => el("div", { class: "toast-line" }, l)));
+    t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, ms);
+  }
+  $("toast").addEventListener("click", () => { $("toast").hidden = true; });
+
+  // Toast after a check: what is new, what got booked, or that nothing changed.
+  const slotKey = (s) => `${s.club}|${s.court}|${s.start}`;
+  function slotLabel(s) {
+    const p = parseLocal(s.start), sd = sheetDay(p);
+    const club = byClubCount() > 1 ? s.club.split(" ")[0] + " " : "";
+    return `${DAYS[sd.dow]} ${sd.dk.slice(8)}.${sd.dk.slice(5, 7)}. ${pad(p.hh)}:${pad(p.mm)} · ${club}${s.court.replace(/^Platz\s*/i, "P")}`;
+  }
+  function checkSummary(before, ok) {
+    if (!ok) return toast("The check had a problem", ["Showing the last results. Try again in a minute."], 5000);
+    const free = S.slots?.free || [];
+    const fresh = free.filter(s => s.new).sort((a, b) => a.start.localeCompare(b.start));
+    const now = new Date().toISOString();
+    const nowKeys = new Set(free.map(slotKey));
+    const booked = before ? [...before.values()].filter(s => !nowKeys.has(slotKey(s)) && new Date(s.start).toISOString() > now).length : 0;
+    const bookedLine = booked ? `${booked} slot${booked === 1 ? "" : "s"} got booked since your last check.` : null;
+    if (!fresh.length) {
+      return toast("No new slots", [`${free.length} free slot${free.length === 1 ? "" : "s"} in total.`, bookedLine].filter(Boolean), 4500);
+    }
+    const lines = fresh.slice(0, 3).map(slotLabel);
+    if (fresh.length > 3) lines.push(`+ ${fresh.length - 3} more (marked with a red dot)`);
+    const hasAlertTimes = ["weekdays", "weekends"].some(k => (S.config?.alert_times?.[k] || []).length);
+    const inAlert = fresh.filter(s => s.alert !== false).length;
+    if (hasAlertTimes) lines.push(inAlert ? `${inAlert} in your alert times.` : "None in your alert times.");
+    if (bookedLine) lines.push(bookedLine);
+    toast(`${fresh.length} new slot${fresh.length === 1 ? "" : "s"} found`, lines, 7000);
+  }
   function setStatus(txt) { $("status").textContent = txt; }
 
   // ---------- render ----------
@@ -591,6 +625,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
   // Spin until the GitHub check started after `since` has finished, then load its results.
   async function waitForCheck(since) {
     const me = ++waiting;
+    const before = new Map((S.slots?.free || []).map(s => [slotKey(s), s]));
     setChecking(true);
     const started = Date.now();
     const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -605,8 +640,7 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
         } catch (e) { if (e.status === 401) throw e; }
         if (run && run.status === "completed") {
           await loadAll();
-          if (run.conclusion === "success") toast("Up to date.");
-          else toast("The check had a problem. Showing the last results.");
+          checkSummary(before, run.conclusion === "success");
           return;
         }
       }
