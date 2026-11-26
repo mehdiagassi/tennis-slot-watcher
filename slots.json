@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-26T15:17:29+01:00",
+ "checked": "2026-11-26T15:19:13+01:00",
  "paused": false,
  "errors": [],
  "clubs": {
@@ -51,7 +51,7 @@
    "start": "2026-11-26T16:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true,
+   "new": false,
    "alert": true
   },
   {
@@ -240,7 +240,7 @@
    "start": "2026-11-27T10:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/27/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -249,7 +249,7 @@
    "start": "2026-11-27T12:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -267,7 +267,7 @@
    "start": "2026-11-27T15:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1869,7 +1869,7 @@
    "start": "2026-12-04T10:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
