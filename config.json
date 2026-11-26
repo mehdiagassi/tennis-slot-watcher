@@ -22,7 +22,7 @@
    "enabled": true,
    "club_id": "clb_11e95b71ddccfd4fbfac02148f89a57c",
    "sport": "tennis",
-   "days_ahead": 7,
+   "days_ahead": 28,
    "max_days_ahead": 30,
    "courts": [],
    "weekday_times": [],
