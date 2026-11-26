@@ -21,7 +21,7 @@
 :root {
   --bg: #F3F5F7; --surface: #FFFFFF; --ink: #14202B; --muted: #5E6B78; --line: #DCE2E8;
   --accent: #1F5FA8; --accent-ink: #FFFFFF; --accent-soft: #E3EDF8;
-  --clay: #B4532A; --clay-soft: #F7E7DF; --hard: #1F5FA8; --hard-soft: #E3EDF8; --carpet: #2F7A3A; --carpet-soft: #E1F1E2;
+  --clay: #B4532A; --clay-soft: #F7E7DF; --hard: #1F5FA8; --hard-soft: #E3EDF8; --carpet: #2F7A3A; --carpet-soft: #E1F1E2; --dot: #E5484D;
   --new: #2E8B57; --warn: #B7791F; --warn-soft: #FBF0DC; --danger: #B42318;
   --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
   --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -31,13 +31,13 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #0E141A; --surface: #17202A; --ink: #E8EEF3; --muted: #93A1AE; --line: #26323E;
   --accent: #6FA8E8; --accent-ink: #0E141A; --accent-soft: #1B2B3D;
-  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D; --carpet: #7BCB86; --carpet-soft: #1C3321;
+  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D; --carpet: #7BCB86; --carpet-soft: #1C3321; --dot: #FF6B6F;
   --new: #5CC48A; --warn: #E3B05C; --warn-soft: #33281A; --danger: #F07A6E;
   color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #0E141A; --surface: #17202A; --ink: #E8EEF3; --muted: #93A1AE; --line: #26323E;
   --accent: #6FA8E8; --accent-ink: #0E141A; --accent-soft: #1B2B3D;
-  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D; --carpet: #7BCB86; --carpet-soft: #1C3321;
+  --clay: #E8906A; --clay-soft: #3A2419; --hard: #7DB2EC; --hard-soft: #1B2B3D; --carpet: #7BCB86; --carpet-soft: #1C3321; --dot: #FF6B6F;
   --new: #5CC48A; --warn: #E3B05C; --warn-soft: #33281A; --danger: #F07A6E;
   color-scheme: dark; }
 
@@ -67,6 +67,8 @@ header.top .wrap { display: flex; align-items: center; gap: 12px; padding-block:
 .iconbtn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .iconbtn:disabled { opacity: .55; }
 .spin svg { animation: spin 1s linear infinite; }
+.ic { display: inline-flex; }
+#checkBtn:disabled { opacity: .85; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* tab bar */
@@ -105,7 +107,7 @@ main .wrap { padding-block: 16px 24px; display: flex; flex-direction: column; ga
 .court.clay { background: var(--clay-soft); color: var(--clay); }
 .court.carpet { background: var(--carpet-soft); color: var(--carpet); }
 .court .sfc { font-weight: 400; font-size: 11.5px; opacity: .85; }
-.court.isnew::before { content: "NEW"; font-size: 9.5px; font-weight: 700; letter-spacing: .06em; line-height: 1; padding: 3px 4px 2px; border-radius: 4px; background: var(--ink); color: var(--bg); }
+.court.isnew::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot); flex: none; }
 .clubtag { font-size: 11.5px; color: var(--muted); width: 100%; }
 
 .empty { text-align: center; padding: 36px 16px; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); }
@@ -163,8 +165,8 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
     </button>
     <button class="iconbtn primary" id="checkBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      Check
+      <span id="checkIcon" class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+      <span id="checkLabel">Check</span>
     </button>
   </div>
 </header>
@@ -565,32 +567,67 @@ code { font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius
       const body = JSON.stringify(S.draft, null, 1) + "\n";
       const res = await gh("/contents/config.json", { method: "PUT", body: JSON.stringify({ message: "Update settings from the app", content: b64encode(body), sha: S.configSha }) });
       S.configSha = res.content.sha; S.config = clone(S.draft);
-      toast("Saved. A new check runs in about a minute.");
+      toast("Saved. Checking with the new settings…");
       render();
-      scheduleReload(75);
+      waitForCheck(Date.now() - 5000);
     } catch (e) {
       toast(e.status === 409 ? "Settings changed elsewhere. Reload and try again." : e.status === 403 || e.status === 404 ? "Can't save: the token needs Contents read and write." : `Couldn't save: ${e.message}`);
     } finally { btn.disabled = false; btn.textContent = "Save settings"; }
   }
 
-  async function checkNow() {
-    const btn = $("checkBtn"); btn.disabled = true; btn.classList.add("spin");
+  // ---------- checking ----------
+  const SPINNER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3a9 9 0 1 1-9 9"/></svg>';
+  const SEARCH_ICON = $("checkIcon").innerHTML;
+  let waiting = 0;  // id of the current wait, so a newer one replaces an older one
+  function setChecking(on) {
+    const btn = $("checkBtn");
+    btn.disabled = on;
+    btn.classList.toggle("spin", on);
+    $("checkIcon").innerHTML = on ? SPINNER : SEARCH_ICON;
+    $("checkLabel").textContent = on ? "Checking" : "Check";
+  }
+
+  // Spin until the GitHub check started after `since` has finished, then load its results.
+  async function waitForCheck(since) {
+    const me = ++waiting;
+    setChecking(true);
+    const started = Date.now();
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    let run = null;
     try {
-      await gh("/actions/workflows/check.yml/dispatches", { method: "POST", body: JSON.stringify({ ref: "main" }) });
-      toast("Checking… results in about a minute.");
-      scheduleReload(70);
+      while (Date.now() - started < 6 * 60 * 1000) {
+        await sleep(run ? 6000 : 4000);
+        if (me !== waiting) return;
+        try {
+          const res = await gh("/actions/workflows/check.yml/runs?per_page=5");
+          run = (res.workflow_runs || []).find(r => new Date(r.created_at).getTime() >= since - 15000) || null;
+        } catch (e) { if (e.status === 401) throw e; }
+        if (run && run.status === "completed") {
+          await loadAll();
+          if (run.conclusion === "success") toast("Up to date.");
+          else toast("The check had a problem. Showing the last results.");
+          return;
+        }
+      }
+      await loadAll();
+      toast("The check is taking long. Showing the latest results.");
     } catch (e) {
-      btn.disabled = false; btn.classList.remove("spin");
-      toast(e.status === 403 || e.status === 404 ? "Can't start a check: the token needs Actions read and write." : `Couldn't start a check: ${e.message}`);
+      handleLoadError(e);
+    } finally {
+      if (me === waiting) setChecking(false);
     }
   }
-  let reloadTimer;
-  function scheduleReload(sec) {
-    clearTimeout(reloadTimer);
-    reloadTimer = setTimeout(async () => {
-      try { await loadAll(); } catch {}
-      $("checkBtn").disabled = false; $("checkBtn").classList.remove("spin");
-    }, sec * 1000);
+
+  async function checkNow() {
+    const since = Date.now();
+    setChecking(true);
+    try {
+      await gh("/actions/workflows/check.yml/dispatches", { method: "POST", body: JSON.stringify({ ref: "main" }) });
+      waitForCheck(since);
+    } catch (e) {
+      setChecking(false);
+      toast(e.status === 403 || e.status === 404 ? "Can't start a check: the token needs Actions read and write." : `Couldn't start a check: ${e.message}`);
+    }
   }
 
   async function refresh() {
