@@ -49,6 +49,27 @@ def ebusy_courts(club):
     return courts
 
 
+def free_starts(busy, start, end, step, grid=30):
+    """Start times (minutes) of free slots between bookings.
+
+    Each gap between bookings is filled from its start in `step`-long slots, so a
+    free hour that begins at :30 (e.g. 16:30-17:30) is found too. Gap starts are
+    rounded up to the booking grid (`grid` minutes).
+    """
+    t = start
+    out = []
+    for s, e in sorted(busy) + [(end, end)]:
+        gap_end = min(s, end)
+        t = -(-t // grid) * grid  # round up to the grid
+        while t + step <= gap_end:
+            out.append(t)
+            t += step
+        t = max(t, e)
+        if t >= end:
+            break
+    return out
+
+
 def ebusy_free_slots(club, now):
     courts = ebusy_courts(club)
     today = now.date()
@@ -77,9 +98,7 @@ def ebusy_free_slots(club, now):
     slots = []
     for d in days:
         for cid, c in courts.items():
-            for t in range(start, end - step + 1, step):
-                if any(s < t + step and t < e for s, e in busy.get((d, cid), [])):
-                    continue
+            for t in free_starts(busy.get((d, cid), []), start, end, step):
                 begin = datetime.combine(d, datetime.min.time(), TZ) + timedelta(minutes=t)
                 if begin <= now:
                     continue
