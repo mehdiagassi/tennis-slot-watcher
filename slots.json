@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-28T09:51:47+01:00",
+ "checked": "2026-11-28T10:44:24+01:00",
  "paused": false,
  "errors": [],
  "clubs": {
@@ -46,11 +46,11 @@
  },
  "free": [
   {
-   "club": "TiB 1848",
-   "court": "Platz 1",
-   "start": "2026-11-28T19:00+01:00",
+   "club": "Treptower Teufel",
+   "court": "Platz 11",
+   "start": "2026-11-28T17:30+01:00",
    "minutes": 60,
-   "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
+   "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/28/2026",
    "new": true,
    "alert": true
   },
@@ -1140,7 +1140,7 @@
    "start": "2026-12-01T21:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2067,7 +2067,7 @@
    "start": "2026-12-03T22:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2112,7 +2112,7 @@
    "start": "2026-12-03T23:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
