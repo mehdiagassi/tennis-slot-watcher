@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-28T02:34:05+01:00",
+ "checked": "2026-11-28T02:46:46+01:00",
  "paused": false,
  "errors": [],
  "clubs": {
@@ -141,7 +141,7 @@
    "start": "2026-11-28T08:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/28/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -366,7 +366,7 @@
    "start": "2026-11-29T17:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/29/2026",
-   "new": true,
+   "new": false,
    "alert": true
   },
   {
@@ -393,7 +393,7 @@
    "start": "2026-11-29T21:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/29/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -438,7 +438,7 @@
    "start": "2026-11-29T22:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/29/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -483,7 +483,7 @@
    "start": "2026-11-29T23:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=11/29/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1104,7 +1104,7 @@
    "start": "2026-12-01T11:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/01/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1140,7 +1140,7 @@
    "start": "2026-12-01T12:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/01/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1221,7 +1221,7 @@
    "start": "2026-12-01T17:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/01/2026",
-   "new": true,
+   "new": false,
    "alert": true
   },
   {
@@ -1797,7 +1797,7 @@
    "start": "2026-12-03T06:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1806,7 +1806,7 @@
    "start": "2026-12-03T06:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1815,7 +1815,7 @@
    "start": "2026-12-03T06:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1824,7 +1824,7 @@
    "start": "2026-12-03T06:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1833,7 +1833,7 @@
    "start": "2026-12-03T06:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1842,7 +1842,7 @@
    "start": "2026-12-03T07:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1851,7 +1851,7 @@
    "start": "2026-12-03T07:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1860,7 +1860,7 @@
    "start": "2026-12-03T07:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1869,7 +1869,7 @@
    "start": "2026-12-03T07:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1878,7 +1878,7 @@
    "start": "2026-12-03T08:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1887,7 +1887,7 @@
    "start": "2026-12-03T08:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1896,7 +1896,7 @@
    "start": "2026-12-03T08:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1905,7 +1905,7 @@
    "start": "2026-12-03T08:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1914,7 +1914,7 @@
    "start": "2026-12-03T09:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1923,7 +1923,7 @@
    "start": "2026-12-03T09:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1932,7 +1932,7 @@
    "start": "2026-12-03T09:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1941,7 +1941,7 @@
    "start": "2026-12-03T10:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1950,7 +1950,7 @@
    "start": "2026-12-03T10:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1959,7 +1959,7 @@
    "start": "2026-12-03T11:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1968,7 +1968,7 @@
    "start": "2026-12-03T11:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1977,7 +1977,7 @@
    "start": "2026-12-03T11:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1986,7 +1986,7 @@
    "start": "2026-12-03T11:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -1995,7 +1995,7 @@
    "start": "2026-12-03T12:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2004,7 +2004,7 @@
    "start": "2026-12-03T12:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2013,7 +2013,7 @@
    "start": "2026-12-03T12:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2022,7 +2022,7 @@
    "start": "2026-12-03T12:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2031,7 +2031,7 @@
    "start": "2026-12-03T13:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2040,7 +2040,7 @@
    "start": "2026-12-03T13:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2049,7 +2049,7 @@
    "start": "2026-12-03T13:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2058,7 +2058,7 @@
    "start": "2026-12-03T13:30+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2067,7 +2067,7 @@
    "start": "2026-12-03T14:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2076,7 +2076,7 @@
    "start": "2026-12-03T14:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2085,7 +2085,7 @@
    "start": "2026-12-03T14:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2094,7 +2094,7 @@
    "start": "2026-12-03T21:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2103,7 +2103,7 @@
    "start": "2026-12-03T21:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2112,7 +2112,7 @@
    "start": "2026-12-03T21:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2121,7 +2121,7 @@
    "start": "2026-12-03T22:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2130,7 +2130,7 @@
    "start": "2026-12-03T22:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2139,7 +2139,7 @@
    "start": "2026-12-03T22:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2148,7 +2148,7 @@
    "start": "2026-12-03T22:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2157,7 +2157,7 @@
    "start": "2026-12-03T22:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2166,7 +2166,7 @@
    "start": "2026-12-03T23:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2175,7 +2175,7 @@
    "start": "2026-12-03T23:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2184,7 +2184,7 @@
    "start": "2026-12-03T23:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2193,7 +2193,7 @@
    "start": "2026-12-03T23:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2202,7 +2202,7 @@
    "start": "2026-12-03T23:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2211,7 +2211,7 @@
    "start": "2026-12-04T00:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2220,7 +2220,7 @@
    "start": "2026-12-04T00:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2229,7 +2229,7 @@
    "start": "2026-12-04T00:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2238,7 +2238,7 @@
    "start": "2026-12-04T00:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2247,7 +2247,7 @@
    "start": "2026-12-04T00:00+01:00",
    "minutes": 60,
    "url": "https://treptower-teufel.ebusy.de/lite-module/1?selectedDate=12/03/2026",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2256,7 +2256,7 @@
    "start": "2026-12-05T21:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true,
+   "new": false,
    "alert": false
   },
   {
@@ -2285,15 +2285,6 @@
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
    "new": false,
    "alert": false
-  },
-  {
-   "club": "TiB 1848",
-   "court": "Platz 2",
-   "start": "2026-12-10T17:00+01:00",
-   "minutes": 60,
-   "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": false,
-   "alert": true
   },
   {
    "club": "TiB 1848",
@@ -2562,7 +2553,7 @@
    "start": "2026-12-26T18:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true,
+   "new": false,
    "alert": true
   },
   {
@@ -2571,7 +2562,7 @@
    "start": "2026-12-26T19:00+01:00",
    "minutes": 60,
    "url": "https://apps.gotcourts.com/newplayer/club/clb_11e95b71ddccfd4fbfac02148f89a57c",
-   "new": true,
+   "new": false,
    "alert": true
   }
  ]
